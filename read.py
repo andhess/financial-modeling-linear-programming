@@ -13,7 +13,7 @@ def readDataFromFile(fileName, outputList):
 
     for line in fl:
         snapshot = line.split(" ")
-        
+
         # get date and time of snapshot
         dateComponents = snapshot[0].split("-")
         year = int(dateComponents[0])
