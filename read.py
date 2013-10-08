@@ -4,14 +4,28 @@ import datetime
     Insert tuples of the instrument's price fluctuations into 
     the specified list
 """
+
+
 def readDataFromFile(fileName, outputList):
     # open the file from bloomberg
+
     fl = open(fileName, "r")
 
     # ignore the first line
-    fl.readline()
+    #fl.readline()
 
-    for line in fl:
+    for i, line in enumerate(fl):
+
+        entry = []
+
+        if line.startswith("Date"):
+            continue
+
+        if line.startswith("\r\n"):
+            continue
+
+        line = line.replace("\t", " ").replace("\r\n", "")
+
         snapshot = line.split(" ")
 
         # get date and time of snapshot
@@ -33,9 +47,16 @@ def readDataFromFile(fileName, outputList):
         lowPrice = float(snapshot[4])
         closePrice = float(snapshot[5])
 
-        tradeVolume = int(snapshot[6])
+        entry.append((timestamp, openPrice, highPrice, lowPrice, closePrice))
+
+        if len(snapshot) > 6:
+            tradeVolume = int(snapshot[6])
+            entry.append(tradeVolume)
 
         # Store tuple of snapshot data in list
-        outputList.append((timestamp, openPrice, highPrice, lowPrice, closePrice, tradeVolume))
+        outputList.append(entry)
 
     fl.close()
+
+# data = []
+# readDataFromFile('./Historical-Datal/fb.txt', data)
