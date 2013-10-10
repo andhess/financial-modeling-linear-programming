@@ -36,7 +36,24 @@ def beta(dataA, dataB):
     B > 1  - moves in same direction as benchmark, but by more value
     """
 
-def delta(
+def delta( data ):
+    """
+    -ratio comparing change in price of underlying asset to the corresponding
+    change in the price of a derivative
+
+    - the hedge ratio
+    """
+
+def vega( data ):
+    """
+    -measurement of an option's sensitivity to changes in the volatility of underlying asset
+    """
+
+def volatility( data ):
+    """
+    -volatility is a measure of the variation of price over time
+    -equal to standard deviation
+    """
 
 
 def rateOfReturn():
