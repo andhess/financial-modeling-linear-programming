@@ -36,9 +36,9 @@ def beta(dataA, dataB):
     B > 1  - moves in same direction as benchmark, but by more value
     """
 
-def delta(
+# def delta(
 
 
-def rateOfReturn():
+# # def rateOfReturn():
 
 
