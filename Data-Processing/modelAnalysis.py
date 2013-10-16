@@ -16,9 +16,8 @@ def getOpenPriceHistory(data):
     priceHistory = list()
     
     for snapshot in data:
-        openPrice = snapshot[1]
+        openPrice = snapshot[0][1]
         priceHistory.append(openPrice)
-
     return priceHistory
 
 def beta(dataA, dataB):
@@ -37,7 +36,6 @@ def beta(dataA, dataB):
     """
 
 # def delta(
-
 
 # # def rateOfReturn():
 
