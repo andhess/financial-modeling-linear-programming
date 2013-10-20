@@ -1,3 +1,5 @@
+Symbol: FB
+
 Date	 (R1) Open 	 (R1) High 	 (R1) Low 	 (R1) Close
 
 2013-05-31 15:50:00	24.34	24.36	24.30	24.35

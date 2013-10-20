@@ -18,10 +18,15 @@ def readDataFromFile(fileName, outputList):
 
         entry = []
 
-        if line.startswith("Date"):
+        if line.startswith("Symbol"):
+            name = line.replace("\t", " ").replace("\r\n", "").split(" ")
+            outputList.append(name[1])
             continue
 
-        if line.startswith("\r\n"):
+        elif line.startswith("Date"):
+            continue
+
+        elif line.startswith("\r\n"):
             continue
 
         line = line.replace("\t", " ").replace("\r\n", "")
@@ -49,9 +54,9 @@ def readDataFromFile(fileName, outputList):
 
         entry.append((timestamp, openPrice, highPrice, lowPrice, closePrice))
 
-        if len(snapshot) > 6:
-            tradeVolume = int(snapshot[6])
-            entry.append(tradeVolume)
+#        if len(snapshot) > 6:
+#            tradeVolume = int(snapshot[6])
+#            entry.append(tradeVolume)
 
         # Store tuple of snapshot data in list
         outputList.append(entry)
@@ -60,3 +65,4 @@ def readDataFromFile(fileName, outputList):
 
 # data = []
 # readDataFromFile('./Historical-Datal/fb.txt', data)
+# print data
