@@ -55,6 +55,10 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
         # prepare for next step
         previousData.append(tick)
 
-
 def investCapital():
+    global equities
+
+    # optimization shit needs to go here
+
+    investmentStrategy.recordPositions(equities)
     pass

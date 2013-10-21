@@ -8,6 +8,7 @@ import common
 import equity
 import investmentStrategy
 import simulate
+import csvGen
 
 # other directories
 # import read
@@ -47,4 +48,5 @@ for trial in trials:
     results.append( simulate.simulateTradingStrategy(previousData, futureData, stepSize, trial[0], trial[1] ) )
 
 
+# csvGen.exportToCSV(results, "Data")
 
