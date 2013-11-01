@@ -20,8 +20,9 @@ class investmentStrategy:
         for i, equity in enumerate(equities):
 
             if self.equityPositions[0] is not equity.symbol:
-                raise Exception("Name matrix doesn't match up")
+                raise Exception("Symbol matrix doesn't match up")
 
             timePosition.append([equity.currentValue, equity.numPositions])
 
         self.equityPositions.append(timePosition)
+        
