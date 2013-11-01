@@ -57,34 +57,48 @@ def pUpGivenUpRun(data, runLength):
     seenRunLength = False
     curRunCount = 0
     totRunCount = 0
-    for i, price in enumerate(data):
-        if i == 0:
-            pass
-        else:
-            delta = data[i] - data[i-1]
-            if seenRunLength:
-                # seen runLength increases
-                totRunCount += 1
-                if delta > 0:
-                    stepVizArray.append("+")
-                    upGivenRunCount += 1
-                else:
-                    stepVizArray.append("-")
-                    seenRunLength = False
-                    curRunCount = 0
+
+    if runLength is 0:
+        for i in range(len(data)):
+            if i == 0:
+                continue
             else:
-                if delta > 0:
-                    stepVizArray.append("+")
-                    curRunCount += 1
-                    if curRunCount >= runLength:
-                        seenRunLength = True
+                if data[i] - data[i-1] > 0:
+                    upGivenRunCount += 1
+        # print "Total # consecutive increase of runLength =", runLength, "\nTotal counted increases after seeing runLength consecutive increases =", upGivenRunCount, "\nResulting in P(increase | runLength consecutive increases ) = ", str(float(upGivenRunCount)/len(data))
+        return float(upGivenRunCount)/len(data)
+    else:
+        for i, price in enumerate(data):
+            if i == 0:
+                continue
+            else:
+                diff = data[i] - data[i-1]
+                if seenRunLength:
+                    # seen runLength increases
+                    totRunCount += 1
+                    if diff > 0:
+                        stepVizArray.append("+")
+                        upGivenRunCount += 1
+                    else:
+                        stepVizArray.append("-")
+                        seenRunLength = False
+                        curRunCount = 0
                 else:
-                    stepVizArray.append("-")
-                    curRunCount = 0
+                    if diff > 0:
+                        stepVizArray.append("+")
+                        curRunCount += 1
+                        if curRunCount >= runLength:
+                            seenRunLength = True
+                    else:
+                        stepVizArray.append("-")
+                        curRunCount = 0
 
-    print "Total # consecutive increase of runLength =", totRunCount, "\nTotal counted increases after seeing runLength consecutive increases =", upGivenRunCount, "\nResulting in P(increase | runLength consecutive increases ) = ", str(float(upGivenRunCount)/totRunCount)
+    # print "Total # consecutive increase of runLength =", runLength, "\nTotal counted increases after seeing runLength consecutive increases =", upGivenRunCount, "\nResulting in P(increase | runLength consecutive increases ) = ", str(float(upGivenRunCount)/totRunCount)
     # print stepVizArray
-
+    if totRunCount is not 0:
+        return float(upGivenRunCount)/totRunCount
+    else:
+        return 0.0
 
 pep = []
 aapl = []
@@ -96,17 +110,90 @@ readDataFromFile("./Historical-Datal/aapl.txt", aapl)
 readDataFromFile("./Historical-Datal/F.txt", f)
 readDataFromFile("./Historical-Datal/fb.txt", fb)
 
-
 pepOpenPrices = getOpenPriceHistory(pep)
 aaplOpenPrices = getOpenPriceHistory(aapl)
 fOpenPrices = getOpenPriceHistory(f)
 fbOpenPrices = getOpenPriceHistory(fb)
+# print pepOpenPrices
+# showHistogram(pepOpenPrices)
 
 
-# print openPrices
-# showHistogram(openPrices)
 
-testArray = [1,1,1,1,2,3,3,4,5,6,7]
-pUpGivenUpRun(aaplOpenPrices, 2)
-showLineGraph(aaplOpenPrices)
+## Test for pUpGivenRun()
+# testArray = [1,2,3,4,5,6,5,4,5,4,5,6,7,6,7,8,9,8,7,6,5,4,3,2,1,2,3,2,3,4,5,6,7,6,7]
+# pUpGivenUpRun(aaplOpenPrices, 2)
+# showLineGraph(pepOpenPrices)
+
+# testresults = []
+# for i in range(0,30):
+#     testresults.append(("Run length "+ str(i), pUpGivenUpRun(testArray, i)))
+
+# for res in testresults:
+#     print res
+
+
+
+def calculateSlope(data,t,numPoints):
+    """
+    Find the slope of the data at time t looking at the time t-numPoints to t
+    t, t-1, t-2, .. t-numPoints+1
+
+    return None for failures. 
+    """
+    print "Calculating slope at t =",t," and numPoints =",numPoints, " and length of data =", len(data)
+    if data is None:
+        print "None data passed"
+        return None
+
+    if t < 0:
+        print "t must be greater than 0"
+        return None
+    if t >= len(data):
+        print "t must be less than the length of data passed"
+        return None
+
+    if numPoints < 2:
+        print "Must compare at least 2 points."
+        return None
+    if numPoints > t+1:
+        print "t must be greater than num points"
+        return None
+
+    dataSlice = []
+    # reverse iterate from data[t] down to data[t-numPoints] and put that in a list
+    for i in range(t, t-numPoints, -1):
+        if data[i] != None:
+            dataSlice.append(data[i])
+    dataSlice.reverse()
+
+    print np.array(dataSlice)
+
+    print np.gradient(dataSlice)
+    print np.sum(np.gradient(dataSlice))/numPoints
+
+    # showDualLineGraph(dataSlice, np.gradient(dataSlice))
+    showLineGraph(dataSlice)
+    showLineGraph(np.gradient(dataSlice))
+    # showLineGraph(np.gradient(np.gradient(dataSlice)))
+
+# testArray = [1,1,0,10]
+# t = [100,81,64,49,36,25,16,9,4,1,0,1,4,9,16,25,36,49,64,81,100]
+
+# calculateSlope(pepOpenPrices,1001,6)
+
+def findProbOfGainGivenSlope(data, patternSlope, patternLength):
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
