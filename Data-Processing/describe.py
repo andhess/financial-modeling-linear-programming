@@ -5,6 +5,7 @@ import datetime
 import scipy as sp
 from scipy import stats
 import matplotlib.pyplot as plt
+from LinearFilter import LinearFilter
 
 
 def showHistogram(data):
@@ -19,6 +20,15 @@ def showLineGraph(data1):
     time = np.arange(0, len(data1), 1)
     plt.plot(time, data1)
     plt.show()
+
+def showDualLineGraph(data1, data2):
+    time = np.arange(0, len(data1), 1)
+    plt.plot(time, data1)
+    time = np.arange(0, len(data2), 1)
+    plt.plot(time, data2)
+
+    plt.show()
+
 
 def readDataFromFile(fileName, outputList):
     # open the file from bloomberg
@@ -191,6 +201,28 @@ class DescriptionModel(object):
         # the average acceleration
         return np.sum(np.gradient(np.gradient(dataSlice)))/float(span)
 
+    def getFilterProjection(self, time):
+        lf = LinearFilter(self.data)
+
+        expGains, actGains = [], []
+        for i in range(1001,len(self.data)-100):
+        # for i in range(1001,1020):
+            projectedValue = lf.applyFilter(i)
+            # print "Expected gain =", 
+            expectedGain = float(projectedValue) - self.data[i]
+            # print projectedValue, "", self.data[i]
+            # print "Actual gain=",
+            actualGain = self.data[i+1] - self.data[i]
+
+            expGains.append(expectedGain)
+            actGains.append(actualGain)
+
+        print scipy.stats.pearsonr(expGains, actGains)
+        showDualLineGraph(expGains, actGains)
+        showLineGraph(np.array(expGains)-np.array(actGains))
+        return (expectedGain, actualGain) 
+
+
 
 class DecisionModel():
     """docstring for DecisionModel"""
@@ -206,7 +238,7 @@ class DecisionModel():
 
         if z > .001:
             return "buy"
-        else if z < -.001:
+        elif z < -.001:
             return "sell"
         else:
             return "hold"
@@ -226,16 +258,17 @@ class WeightEstimationModel():
 
         # create a description model for the equity
         self.descriptionModel = DescriptionModel(data)
+        self.descriptionModel.getFilterProjection(1001)
 
 
 
 wem = WeightEstimationModel("PEP")
 
-objFuncValues = []
-for t in xrange(len(wem.descriptionModel.data)):
-    objFuncValues.append(wem.descriptionModel.getObjectiveFunctionValue(t))
+# objFuncValues = []
+# for t in xrange(len(wem.descriptionModel.data)):
+#     objFuncValues.append(wem.descriptionModel.getObjectiveFunctionValue(t))
 
-showLineGraph(objFuncValues)
+# showLineGraph(objFuncValues)
 # print wem.descriptionModel.getObjectiveFunctionValue(148)
 # print wem.descriptionModel.data
 
