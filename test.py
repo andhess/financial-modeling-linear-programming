@@ -37,6 +37,13 @@ def showLineGraph(data1):
     plt.plot(time, data1)
     plt.show()
 
+def showLineGraph(data, time):
+    dataChunk = []
+    for i in range(time-15, time+15):
+        dataChunk.append(data[i])            
+    time = np.arange(0, len(dataChunk), 1)
+    plt.plot(time, dataChunk)
+    plt.show()
 
 def countNumIncreases(data):
     count = 0
@@ -101,19 +108,19 @@ def pUpGivenUpRun(data, runLength):
         return 0.0
 
 pep = []
-aapl = []
-f = []
-fb = []
+# aapl = []
+# f = []
+# fb = []
 
 readDataFromFile("./Historical-Datal/PEP.txt", pep)
-readDataFromFile("./Historical-Datal/aapl.txt", aapl)
-readDataFromFile("./Historical-Datal/F.txt", f)
-readDataFromFile("./Historical-Datal/fb.txt", fb)
+# readDataFromFile("./Historical-Datal/aapl.txt", aapl)
+# readDataFromFile("./Historical-Datal/F.txt", f)
+# readDataFromFile("./Historical-Datal/fb.txt", fb)
 
 pepOpenPrices = getOpenPriceHistory(pep)
-aaplOpenPrices = getOpenPriceHistory(aapl)
-fOpenPrices = getOpenPriceHistory(f)
-fbOpenPrices = getOpenPriceHistory(fb)
+# aaplOpenPrices = getOpenPriceHistory(aapl)
+# fOpenPrices = getOpenPriceHistory(f)
+# fbOpenPrices = getOpenPriceHistory(fb)
 # print pepOpenPrices
 # showHistogram(pepOpenPrices)
 
@@ -181,10 +188,10 @@ def calculateSlope(data,t,numPoints):
 
 # calculateSlope(pepOpenPrices,1001,6)
 
-def findProbOfGainGivenSlope(data, patternSlope, patternLength):
+# def findProbOfGainGivenSlope(data, patternSlope, patternLength):
     
 
-
+showLineGraph(pepOpenPrices, 145)
 
 
 
