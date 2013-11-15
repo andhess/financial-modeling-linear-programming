@@ -8,9 +8,9 @@ class LinearFilter():
     and R is the desired outcome
 
     """
-    def __init__(self, data, filterLength=1000):
+    def __init__(self, data, filterLength=1000, stepLength=10):
         self.data = data
-        self.s, self.r = self.buildSystem(filterLength)
+        self.s, self.r = self.buildSystem(filterLength, stepLength)
         self.filterLength = filterLength
         self.k = self.getFilter(self.s,self.r) 
 
@@ -19,7 +19,7 @@ class LinearFilter():
         k = sInv*r
         return k       
 
-    def buildSystem(self, filterLength, stepLength=10):
+    def buildSystem(self, filterLength, stepLength):
         """
         Build the system for a linear filter K in the equation S*K=R
         S is formed by gathering discrete slices of data at a constant rate
@@ -123,6 +123,5 @@ class LinearFilter():
 
 # lf = LinearFilter([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 # print lf.applyFilter(12, 12)
-
 
 

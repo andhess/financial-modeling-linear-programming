@@ -202,24 +202,29 @@ class DescriptionModel(object):
         return np.sum(np.gradient(np.gradient(dataSlice)))/float(span)
 
     def getFilterProjection(self, time):
-        lf = LinearFilter(self.data)
+        correlationList = []
+        # filterLength = 2500
+        for filterLength in range(500,4501,500):
+            stepLen = 1
+            lf = LinearFilter(self.data,filterLength,stepLen)
+            expectedGains, actualGains = [], []
+            for i in range(filterLength+1,len(self.data)-100):
+            # for i in range(1001,1020):
+                projectedValue = lf.applyFilter(i)
+                expectedGain = float(projectedValue) - self.data[i]
+                
+                actualGain = self.data[i+1] - self.data[i]
 
-        expGains, actGains = [], []
-        for i in range(1001,len(self.data)-100):
-        # for i in range(1001,1020):
-            projectedValue = lf.applyFilter(i)
-            # print "Expected gain =", 
-            expectedGain = float(projectedValue) - self.data[i]
-            # print projectedValue, "", self.data[i]
-            # print "Actual gain=",
-            actualGain = self.data[i+1] - self.data[i]
+                expectedGains.append(expectedGain)
+                actualGains.append(actualGain)
 
-            expGains.append(expectedGain)
-            actGains.append(actualGain)
+            correlation = (stepLen, scipy.stats.pearsonr(expectedGains, actualGains))
+            correlationList.append(correlation)
+            # showDualLineGraph(expectedGains, actualGains)
+            # showLineGraph(np.array(expectedGains)-np.array(actualGains))
+            print correlation
 
-        print scipy.stats.pearsonr(expGains, actGains)
-        showDualLineGraph(expGains, actGains)
-        showLineGraph(np.array(expGains)-np.array(actGains))
+        showLineGraph(np.array(correlationList))
         return (expectedGain, actualGain) 
 
 
