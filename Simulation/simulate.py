@@ -33,7 +33,7 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
     global availableCapital
     equityNames = []
 
-    numIntervalsToTrade = len(futureData)
+    numIntervalsToTrade = len(futureData[0]) - 1
 
     # create equity object for everything in trading period
     for i, data in enumerate(futureData):
