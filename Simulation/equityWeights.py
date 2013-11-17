@@ -1,3 +1,5 @@
+import math
+import datetime
 
 class EquityWeights:
     """
@@ -57,3 +59,24 @@ class EquityWeights:
 
         for pair in pairs:
             self.scale[pair[0]] = pair[1]
+
+    def prevTraining(previousData):
+        """
+        prevTraining takes in an equity object and previousData
+
+        Inputs:
+        previousData  :   passed in from simulate
+
+
+        previousData : [1st tick, 2nd tick, 3rd tick, .... last tick before traind period]
+
+        each tick: [ timestamp, open price, highest, lowest, close price]
+
+        prevTraining sets up for the 
+        """
+
+    def singleTrain(tick):
+        """
+        sinlgeTrain does the training for a single tick
+
+

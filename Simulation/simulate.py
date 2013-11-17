@@ -57,9 +57,15 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
     # now let the investment begin
     for i, tick in enumerate(futureData):
 
+        # make prediction of next step
+
+        # make moves for next step
         investCapital()
 
         # prepare for next step
+        # teach model for current data
+        equityWeights.
+        # current data is now old data
         previousData.append(tick)
 
 def investCapital():
