@@ -5,6 +5,7 @@ class EquityWeights:
     feature for an equity.
     Weights are normalized.
     The sum of all weights = 1
+    Each weight is limited to [0,1]
     On initialization, all weights will have the same value
     Training will give different weights more emphasis
 

@@ -1,6 +1,7 @@
 import equity
 import common
 import investmentStrategy
+import learnWeights
 
 
 def calculateStepSize(stockData):
@@ -46,8 +47,8 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
         del futureData[i][0]
 
     # train the weights
-    for j, equity in enumerate(previousData):
-        for k, tick in enumerate(previousData)
+    for j, equity in equities:
+        equity = learnWeights.prevTraining( equity, previousData ):
 
 
     # create investmentStrategy object
