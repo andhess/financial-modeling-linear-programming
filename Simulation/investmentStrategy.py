@@ -8,11 +8,10 @@ class investmentStrategy:
     def __init__(self, availableCapital, equities):
 
         self.liquid = availableCapital
-        self.equityPositions = []
+        self.equityPositions = {}
 
         for instrument in equities:
-            equity = [instrument, []]
-            self.equityPositions.append(equity)
+            self.equityPositions[instrument] = []
 
     def recordPositions(self, equities):
         timePosition = []

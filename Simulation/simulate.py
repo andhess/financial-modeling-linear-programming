@@ -14,13 +14,14 @@ def calculateStepSize(stockData):
 
     return stepSize
 
-def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, riskTolerance):
+def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, riskTolerance, listOfWeights):
     """
     previousData        :   A set of equities and their previous data
     futureData          :   A set of the same equities but their performance over the next tradingPeriod
     stepSize            :   The time interval on which each equity price is given
     desiredReturn       :   Desired return, a percentage of initial capital
     riskTolerance       :   Tolerance to risk. Current risk value is not to exceed this at any time
+    listOfWeights       :   These are the features that we want to study trends in
 
     the first index of previousData and futureData will contain the symbol of the stock
     this program anticipates each index of the past/future data being in the same order
@@ -35,14 +36,19 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
     numIntervalsToTrade = len(futureData[0]) - 1
 
-    # create equity object for everything in trading period
-    for i, data in enumerate(futureData):
-        equities.append(equity.Equity( data[i][0], data[i][1][1], previousData[i][futureData - 1][1] ))
+    # create equity object for set in previousData
+    for i, data in enumerate(previousData):
+        equities.append(equity.Equity( data[i][0], data[i][1][1], 0, listOfWeights ))
         equityNames.append(data[i][0])
 
         # now remove symbol from list of data
         del previousData[i][0]
         del futureData[i][0]
+
+    # train the weights
+    for j, equity in enumerate(previousData):
+        for k, tick in enumerate(previousData)
+
 
     # create investmentStrategy object
     positionHistory = investmentStrategy.InvestmentStrategy(availableCapital, equityNames)

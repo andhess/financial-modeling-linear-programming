@@ -1,9 +1,10 @@
+import math
 import datetime
 
-"""
-    Insert tuples of the instrument's price fluctuations into 
-    the specified list
-"""
+
+
+def training(equitySymbol, data):
+
 
 
 def readDataFromFile(fileName, outputList):
@@ -63,6 +64,3 @@ def readDataFromFile(fileName, outputList):
 
     fl.close()
 
-data = []
-readDataFromFile('./Historical-Datal/fb.txt', data)
-print data
