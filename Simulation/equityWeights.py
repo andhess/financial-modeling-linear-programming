@@ -44,7 +44,6 @@ class EquityWeights:
         for pair in pairs:
             self.sign[pair[0]] = pair[1]
 
-
     def updateScaleWeights(self, pairs):
         """
         Update the scale weights to a given value
@@ -77,5 +76,7 @@ class EquityWeights:
     def singleTrain(self, tick, nextTick):
         """
         sinlgeTrain does the training for a single tick
+        """
 
-
+    def predict(self, tick):
+        

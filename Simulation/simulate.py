@@ -47,8 +47,8 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
         del futureData[i][0]
 
     # train the weights
-    for j, equity in equities:
-        equity.weights.prevTraining( previousData ):
+    for j, equity in enumerate(equities):
+        equity.weights.prevTraining( previousData[j] ):
 
 
     # create investmentStrategy object
@@ -58,6 +58,8 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
     for i in range(0, numIntervalsToTrade):
 
         # make prediction of next step
+        for j, equity in enumerate(equities):
+            equity.weights.predict( futureData[j][i] )
 
         # make moves for next step
         investCapital()
@@ -65,11 +67,15 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
         # will there be another step?
         if i != trainIntervals:
 
-            # teach model for current data
-            
+            # teach each equity from current data
+            for k, equity in enumerate(equities):
+                
+                # train from this tick
+                equity.weights.singleTrain( futureData[k][i], futureData[k][i+1] )
 
-            # current data is now old data
-            previousData.append(tick)
+                # current data is now old data
+                previousData.append( futureData[k][i] )
+
 
 def investCapital():
     global equities
