@@ -11,6 +11,7 @@ class Equity:
         self.symbol = symbol
         self.currentValue = currentValue
         self.previousValue = previousValue
+        self.predictedValue = 0
         self.numPositions = 0
         self.weights = equityWeights.EquityWeights(listOfWeights)
 
@@ -20,6 +21,13 @@ class Equity:
         """
         self.previousValue = self.currentValue
         self.currentValue = newPrice
+
+    def updatePredictedValue(self, prediction):
+        """
+        predicted value for next tick
+        """
+
+        self.predictedValue = prediction
 
     def purchaseEquity(self, amountToInvest, totalCapital):
         """

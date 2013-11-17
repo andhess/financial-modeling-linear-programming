@@ -1,7 +1,6 @@
 import equity
 import common
 import investmentStrategy
-import learnWeights
 
 
 def calculateStepSize(stockData):
@@ -35,7 +34,8 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
     global availableCapital
     equityNames = []
 
-    numIntervalsToTrade = len(futureData[0]) - 1
+    numIntervalsToTrade = len(futureData[0])
+    trainIntervals = numIntervalsToTrade - 1
 
     # create equity object for set in previousData
     for i, data in enumerate(previousData):
@@ -48,25 +48,28 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
     # train the weights
     for j, equity in equities:
-        equity = learnWeights.prevTraining( equity, previousData ):
+        equity.weights.prevTraining( previousData ):
 
 
     # create investmentStrategy object
     positionHistory = investmentStrategy.InvestmentStrategy(availableCapital, equityNames)
 
     # now let the investment begin
-    for i, tick in enumerate(futureData):
+    for i in range(0, numIntervalsToTrade):
 
         # make prediction of next step
 
         # make moves for next step
         investCapital()
 
-        # prepare for next step
-        # teach model for current data
-        equityWeights.
-        # current data is now old data
-        previousData.append(tick)
+        # will there be another step?
+        if i != trainIntervals:
+
+            # teach model for current data
+            
+
+            # current data is now old data
+            previousData.append(tick)
 
 def investCapital():
     global equities

@@ -50,7 +50,6 @@ class EquityWeights:
         Update the scale weights to a given value
         Able to update all or one attribute      
 
-        
         Inputs:
         pairs = [ [ <attribute name>, newValue ] , ... ]
 
@@ -60,7 +59,7 @@ class EquityWeights:
         for pair in pairs:
             self.scale[pair[0]] = pair[1]
 
-    def prevTraining(previousData):
+    def prevTraining(self, previousData):
         """
         prevTraining takes in an equity object and previousData
 
@@ -75,7 +74,7 @@ class EquityWeights:
         prevTraining sets up for the 
         """
 
-    def singleTrain(tick):
+    def singleTrain(self, tick, nextTick):
         """
         sinlgeTrain does the training for a single tick
 
