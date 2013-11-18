@@ -64,19 +64,24 @@ class EquityWeights:
 
         Inputs:
         previousData  :   passed in from simulate
-
-
-        previousData : [1st tick, 2nd tick, 3rd tick, .... last tick before traind period]
-
-        each tick: [ timestamp, open price, highest, lowest, close price]
-
-        prevTraining sets up for the 
         """
+
+        for k in range(1, len(previousData) ):
+            singleTrain( previousData[j-1], previousData[j] )
+
 
     def singleTrain(self, tick, nextTick):
         """
-        sinlgeTrain does the training for a single tick
+        sinlgeTrain does the training for a single tick, which is 
+        where all machine learning is compared across
+
+        a tick: [ timestamp, open price, highest, lowest, close price]
+
+        nextTick is the tick that is occurring immediately after tick
         """
 
     def predict(self, tick):
-        
+        """
+        using trained weights, predict the magnitude and direction for a change
+        in stock price
+        """
