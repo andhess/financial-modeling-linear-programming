@@ -11,8 +11,6 @@ class EquityWeights:
     On initialization, all weights will have the same value
     Training will give different weights more emphasis
 
-    This class does not do training, it just stores the weights with a feature
-
     Inputs: List of weights (array)
         Ex: [ "Acceleration", "Velocity", "Price", "Trend"]
 
@@ -67,10 +65,10 @@ class EquityWeights:
         """
 
         for k in range(1, len(previousData) ):
-            singleTrain( previousData[j-1], previousData[j] )
+            singleTrain( previousData[:k], previousData[k] )
 
 
-    def singleTrain(self, tick, nextTick):
+    def singleTrain(self, allPreviousTicks, nextTick):
         """
         sinlgeTrain does the training for a single tick, which is 
         where all machine learning is compared across
@@ -80,8 +78,24 @@ class EquityWeights:
         nextTick is the tick that is occurring immediately after tick
         """
 
-    def predict(self, tick):
+        # get the current stats for the features!
+
+        
+
+
+    def predict(self, previousData, tick):
         """
         using trained weights, predict the magnitude and direction for a change
         in stock price
         """
+
+        # get the attributes for each feature from prevData
+
+        # predict sign
+
+
+        # predict magnitude
+
+
+
+

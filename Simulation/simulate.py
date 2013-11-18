@@ -59,7 +59,7 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
         # make prediction of next step
         for j, equity in enumerate(equities):
-            equity.weights.predict( futureData[j][i] )
+            equity.predictedValue = equity.weights.predict( previousData[j], futureData[j][i] )
 
         # make moves for next step
         investCapital()
@@ -69,12 +69,12 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
             # teach each equity from current data
             for k, equity in enumerate(equities):
-                
-                # train from this tick
-                equity.weights.singleTrain( futureData[k][i], futureData[k][i+1] )
 
                 # current data is now old data
-                previousData.append( futureData[k][i] )
+                previousData[k].append( futureData[k][i] )
+
+                # train from this tick
+                equity.weights.singleTrain( previousData[k], futureData[k][i+1] )
 
 
 def investCapital():
