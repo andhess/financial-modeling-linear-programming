@@ -59,28 +59,26 @@ class EquityWeights:
     def prevTraining(self, previousData):
         """
         prevTraining takes in an equity object and previousData
-
-        Inputs:
-        previousData  :   passed in from simulate
+        iteratively trains from all of the data
         """
 
         for k in range(1, len(previousData) ):
             singleTrain( previousData[:k], previousData[k] )
 
 
-    def singleTrain(self, allPreviousTicks, nextTick):
+    def singleTrain(self, allPreviousTicks, latestTick):
         """
         sinlgeTrain does the training for a single tick, which is 
         where all machine learning is compared across
 
         a tick: [ timestamp, open price, highest, lowest, close price]
 
-        nextTick is the tick that is occurring immediately after tick
+        latestTick is the tick that is occurring immediately after tick
         """
 
         # get the current stats for the features!
+        features = getFeatures(allPreviousTicks)
 
-        
 
 
     def predict(self, previousData, tick):
@@ -90,6 +88,7 @@ class EquityWeights:
         """
 
         # get the attributes for each feature from prevData
+        features = getFeatures(previousData)
 
         # predict sign
 
