@@ -11,31 +11,14 @@ class DescriptionModel(object):
         for item in features:
             self.weights[item] = val
 
-
-        # normalize
-        # total = float(self.totalCount())
-        # if total == 0: return
-        # for key in self.keys():
-        #     self[key] = self[key] / total
-
         self.featureFunctions = [self.getVelocity, self.getAcceleration]
         self.weights = [1,1]
-
-        # normalize the weights to initialize
-        self.normalizeWeights()
-        
 
     def getObjectiveFunctionValue(self, time):
         z = 0.0
         for i in xrange(len(self.weights)):
             z += self.weights[i] * self.featureFunctions[i](time)
         return z
-
-    def normalizeWeights(self):
-        total = float(len(self.weights))
-        if total == 0: return
-        for i, w in enumerate(self.weights):
-            self.weights[i] = w / total
 
     def getActualReturn(self, time, endTime=0):
         """ Get the actual return of the equity by returning the difference of 
