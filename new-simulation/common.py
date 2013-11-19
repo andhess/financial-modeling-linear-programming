@@ -1,5 +1,9 @@
-# equities holds all of the equity objects
-equities = []
+# chrono
+time = 0
+
+# portfolio information
+portfolio = []
+positionHistory = 0
 
 # interest rate is per annum c.c.
 interestRate = 1.001

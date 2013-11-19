@@ -5,13 +5,13 @@ class investmentStrategy:
     It also serves as the manager be
     """
 
-    def __init__(self, availableCapital, equities):
+    def __init__( self, availableCapital ):
 
         self.liquid = availableCapital
-        self.equityPositions = {}
+        self.positions = {}
 
-        for instrument in equities:
-            self.equityPositions[instrument] = []
+    def addInstrument( self, instrument ):
+        self.positions[instrument] = []
 
     def recordPositions(self, equities):
         timePosition = []
