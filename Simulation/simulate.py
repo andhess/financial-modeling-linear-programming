@@ -27,7 +27,6 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
     this program anticipates each index of the past/future data being in the same order
     s.t. previousData[i] is for the same symbol as futureData[i]
     it is also assumed that all data has the same level of resolution. Any inconsistencies will not work
-
     """
 
     global equities
@@ -39,7 +38,7 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
     # create equity object for set in previousData
     for i, data in enumerate(previousData):
-        equities.append(equity.Equity( data[i][0], data[i][1][1], 0, listOfWeights ))
+        equities.append( equity.Equity( data[i][0], data[i][1][1], 0, listOfWeights ))
         equityNames.append(data[i][0])
 
         # now remove symbol from list of data
@@ -62,7 +61,7 @@ def  simulateTradingStrategy(previousData, futureData, stepSize, desiredReturn, 
 
         # make prediction of next step
         for j, equity in enumerate(equities):
-            equity.predictedValue = equity.weights.predict( previousData[j] )
+            equity.predictedValue = equity.weights.predict( previousData[j], futureData[j][i] )
 
         # make moves for next step
         investCapital()

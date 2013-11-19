@@ -1,5 +1,6 @@
 import math
 import datetime
+import common
 
 class EquityWeights:
     """
@@ -79,16 +80,21 @@ class EquityWeights:
         # get the current stats for the features!
         features = getFeatures(allPreviousTicks)
 
+        # see what would be predicted from this data
+        prediction = self.predict( allPreviousTicks, latestTick, features)
+
+        # get the difference between the prediciton and the actual
 
 
-    def predict(self, previousData, tick):
+    def predict(self, previousData, currentTick, features = None ):
         """
         using trained weights, predict the magnitude and direction for a change
         in stock price
         """
 
-        # get the attributes for each feature from prevData
-        features = getFeatures(previousData)
+        # have features yet?
+        if features is None:
+            features = getFeatures(previousData)
 
         # predict sign
 

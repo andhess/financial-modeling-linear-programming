@@ -9,3 +9,7 @@ availableCapital = 1000000
 
 # use this to toggle csv output
 csvOn = False
+
+# what machine learning will be used?
+learning = "enumeration"
+learning = "recognition"
