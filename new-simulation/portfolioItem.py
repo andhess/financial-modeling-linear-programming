@@ -15,5 +15,3 @@ class PortfolioItem:
     def updateEquityPrice(self, newPrice):
         self.previousValue = self.currentValue
         self.currentValue = newPrice
-
-    

@@ -1,24 +1,52 @@
-class DescriptionModel(object):
+import math
+import datetime
+
+class DescriptionModel( object ):
     
     """  """
-    def __init__(self, data, features):
+    def __init__( self, data, features ):
         self.data = data
 
-        n = len(features)
+        n = len( features )
         val = 1.0 / n
         self.weights = {}
 
         for item in features:
             self.weights[item] = val
 
-        self.featureFunctions = [self.getVelocity, self.getAcceleration]
-        self.weights = [1,1]
-
     def getObjectiveFunctionValue(self, time):
+        """
+        gets the value for existing weight values and the features currently
+        observed in the model
+
+        Input:
+        time    :   the current time in the whole model
+        """
+
         z = 0.0
+        for feature in self.weights:
+            z += self.weights[feature] * self.getCurrentFeature(feature, time) 
+
         for i in xrange(len(self.weights)):
             z += self.weights[i] * self.featureFunctions[i](time)
         return z
+
+    def getCurrentFeature( self, feature, time ):
+        """
+        determine which feature function to run
+
+        Inputs:
+        time    :   the current time in the model
+        feature :   the feature desired to be selected
+        """
+
+        # expand this list as more features are added
+        if feature == "acceleration":
+            return self.getAcceleration( time )
+        elif feature == "veolocity":
+            return self.getVelocity
+        else:
+            return 0
 
     def getActualReturn(self, time, endTime=0):
         """ Get the actual return of the equity by returning the difference of 
@@ -43,7 +71,6 @@ class DescriptionModel(object):
         else:
             # return none in case of malformed input
             return None
-
 
     def getVariance(self):
         """
@@ -113,3 +140,5 @@ class DescriptionModel(object):
 
         showLineGraph(np.array(correlationList))
         return (expectedGain, actualGain) 
+
+    def train
