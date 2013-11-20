@@ -3,6 +3,8 @@ import datetime
 
 class DescriptionModel( object ):
     
+    global learning
+
     """  """
     def __init__( self, data, features ):
         self.data = data
@@ -139,6 +141,7 @@ class DescriptionModel( object ):
             print correlation
 
         showLineGraph(np.array(correlationList))
-        return (expectedGain, actualGain) 
+        return (expectedGain, actualGain)
 
-    def train
+    def training( self, time ):
+        

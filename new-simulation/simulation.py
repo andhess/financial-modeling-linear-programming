@@ -9,20 +9,18 @@ def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weig
 
     global time
     global portfolio
-    global positionHistory
-    global availableCapital
     
     # --- Initialization ---
 
     # create investmentStrategy to remember the important stuff
-    positionHistory = investmentStrategy.InvestmentStrategy( availalableCapital )
+    common.positionHistory = investmentStrategy.InvestmentStrategy( common.availalableCapital )
 
     # create portfolio objects
     for i, dataSet in enumerate( data ):
         symbol = data[i][0]
         del data[i][0]
-        portflio.append( PortfolioItem( symbol, data, weights ) )
-        positionHistory.addInstrument( symbol )
+        common.portfolio.append( portfolioItem.PortfolioItem( symbol, data, weights ) )
+        common.positionHistory.addInstrument( symbol )
 
     totalTime = len( data[0] )
     tradingTime = totalTime - startTime - 1
@@ -31,20 +29,20 @@ def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weig
 
     # train the weights
 
-    while time <= startTime:
-        for j, instrument in enumerate( portfolio ):
-            instrument.description.train( time )
+    while common.time <= startTime:
+        for j, instrument in enumerate( common.portfolio ):
+            instrument.description.train( common.time )
 
-        time += 1
+        common.time += 1
 
     # --- Trading Period ---
 
-    while time < totalTime:
+    while common.time < totalTime:
 
         # get description
 
         # make decision
 
-        time += 1
+        common.time += 1
 
         # training

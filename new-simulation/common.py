@@ -15,5 +15,5 @@ availableCapital = 1000000
 csvOn = False
 
 # what machine learning will be used?
-learning = "enumeration"
-learning = "recognition"
+learning = "enumeration"        # @desmond
+learning = "recognition"        # @andrew
