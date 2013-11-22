@@ -29,8 +29,6 @@ class DescriptionModel( object ):
         for feature in self.weights:
             z += self.weights[feature] * self.getCurrentFeature(feature, time) 
 
-        for i in xrange(len(self.weights)):
-            z += self.weights[i] * self.featureFunctions[i](time)
         return z
 
     def getCurrentFeature( self, feature, time ):
@@ -45,8 +43,8 @@ class DescriptionModel( object ):
         # expand this list as more features are added
         if feature == "acceleration":
             return self.getAcceleration( time )
-        elif feature == "veolocity":
-            return self.getVelocity
+        elif feature == "velocity":
+            return self.getVelocity( time )
         else:
             return 0
 
@@ -144,4 +142,4 @@ class DescriptionModel( object ):
         return (expectedGain, actualGain)
 
     def training( self, time ):
-        
+
