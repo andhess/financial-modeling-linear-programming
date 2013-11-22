@@ -63,6 +63,6 @@ def readDataFromFile(fileName, outputList):
 
     fl.close()
 
-# data = []
-# readDataFromFile('./Historical-Datal/fb.txt', data)
-# print data
+data = []
+readDataFromFile('./Historical-Datal/fb.txt', data)
+print data

@@ -1,3 +1,5 @@
+import equityWeights
+
 class Equity:
     """
     An equity keeps track of a speciic stock index
@@ -5,11 +7,13 @@ class Equity:
     It also keeps track of the number of positions one currently holds in a portfolio
     """
 
-    def __init__(self, symbol, currentValue, previousValue):
+    def __init__(self, symbol, currentValue, previousValue, listOfWeights):
         self.symbol = symbol
         self.currentValue = currentValue
         self.previousValue = previousValue
+        self.predictedValue = 0
         self.numPositions = 0
+        self.weights = equityWeights.EquityWeights(listOfWeights)
 
     def updateEquityPrice(self, newPrice):
         """
@@ -17,6 +21,13 @@ class Equity:
         """
         self.previousValue = self.currentValue
         self.currentValue = newPrice
+
+    def updatePredictedValue(self, prediction):
+        """
+        predicted value for next tick
+        """
+
+        self.predictedValue = prediction
 
     def purchaseEquity(self, amountToInvest, totalCapital):
         """
