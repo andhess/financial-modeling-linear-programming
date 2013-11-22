@@ -14,13 +14,15 @@ def readDataFromFile(fileName, outputList):
     # ignore the first line
     #fl.readline()
 
+    symbol = ''
+
     for i, line in enumerate(fl):
 
         entry = []
 
         if line.startswith("Symbol"):
             name = line.replace("\t", " ").replace("\r\n", "").split(" ")
-            outputList.append(name[1])
+            symbol = name[1]
             continue
 
         elif line.startswith("Date"):
@@ -59,7 +61,12 @@ def readDataFromFile(fileName, outputList):
 #            entry.append(tradeVolume)
 
         # Store tuple of snapshot data in list
-        outputList.append(entry)
+        outputList.insert(0,entry)
+
+    if symbol is not '':
+        outputList.insert(0, symbol)
+    else:
+        raise Exception("couldn't find symbol")
 
     fl.close()
 
