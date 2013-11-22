@@ -227,6 +227,15 @@ class DescriptionModel(object):
         showLineGraph(np.array(correlationList))
         return (expectedGain, actualGain) 
 
+    def kalmanProjection(self):
+        """
+        Take the actual gain and add noise
+
+        y = data[t+1]-data[t] + e
+        where e is error that is normally distributed
+        """
+        pass
+
 
 
 class DecisionModel():
@@ -261,9 +270,11 @@ class WeightEstimationModel():
         readDataFromFile(dataPath, rawReadData)
         data = getOpenPriceHistory(rawReadData)
 
+        print data
+
         # create a description model for the equity
-        self.descriptionModel = DescriptionModel(data)
-        self.descriptionModel.getFilterProjection(1001)
+        # self.descriptionModel = DescriptionModel(data)
+        # self.descriptionModel.getFilterProjection(1001)
 
 
 
