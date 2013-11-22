@@ -29,10 +29,11 @@ class AlphaBetaFilter():
         self.data = data
 
     def filter(self, alpha):
-        beta = 
-        gamma = 
+        beta = self.getBeta(alpha)
+        gamma = self.getGamma(alpha, beta)
 
         filteredData = []
+        predictedData = []
 
         rawData = [208000.0, 207000.0, 217000.0, 204000.0, 216000.0, 229000.0, 229000.0, 242000.0, 310000.0, 241000.0, 245000.0, 247000.0, 259000.0, 257000.0, 299000.0, 245000.0, 255000.0]
 
@@ -51,31 +52,33 @@ class AlphaBetaFilter():
         Vs = rawData[1] - rawData[0]
         As = 0.0
 
+        predictedData.append(Xp)
         filteredData.append(Xs)
 
         for i in range(2, len(rawData)):
-            print "Iteration:", i
+            # print "Iteration:", i
             data = rawData[i]
-            print data
+            # print data
             Xp = self.getXp(Xs, Vs, As)
-            print "Xp", Xp
+            # print "Xp", Xp
             Vp = self.getVp(Vs, As)
-            print "Vp:", Vp
+            # print "Vp:", Vp
             residual = self.getResidual(data, Xp)
-            print "Residual", residual
+            # print "Residual", residual
 
             Xs = self.getXs(Xp, residual, alpha)
-            print "Xs", Xs
+            # print "Xs", Xs
             Vs = self.getVs(Vp, residual, beta)
-            print "Vs", Vs
+            # print "Vs", Vs
             As = self.getAs(As, residual, gamma)
-            print "As", As
-            print "\n"
-
+            # print "As", As
+            # print "\n"
+    
+            predictedData.append(Xp)
             filteredData.append(Xs)
 
-        # for i in range(min(len(filteredData), len(rawData))):
-        #     print "Raw:", rawData[i], " | ", filteredData[i], " :FilteredData"
+        for i in range(min(len(filteredData), len(rawData))):
+            print "Raw:", rawData[i], " | ", filteredData[i], " :FilteredData"
 
     def getXp(self, Xs_minus, Vs_minus, As_minus):
         return Xs_minus + Vs_minus + 0.5*As_minus
@@ -94,6 +97,14 @@ class AlphaBetaFilter():
 
     def getAs(self, As_minus, residual, gamma):
         return As_minus + gamma*residual
+
+    def getBeta(self, alpha):
+        left = 2.0*(2.0-alpha)
+        right = -4.0*np.sqrt(1.0-alpha)
+        return left + right
+
+    def getGamma(self, alpha, beta):
+        return np.power(beta,2.0)/2.0/alpha
 
     def execute(self):
         dt = 0.5
