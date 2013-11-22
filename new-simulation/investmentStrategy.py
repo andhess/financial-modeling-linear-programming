@@ -2,26 +2,45 @@
 class investmentStrategy:
     """
     investmentStrategy keeps track of every position held over time
-    It also serves as the manager be
     """
 
     def __init__( self, availableCapital ):
 
-        self.liquid = availableCapital
+        self.liquid = [availableCapital]
         self.positions = {}
+        self.value = []
 
     def addInstrument( self, instrument ):
+        """
+        add an instrument to the investmentStrategy
+
+        Input:
+        instrument  :   the instrument being added
+        """
+
         self.positions[instrument] = []
 
-    def recordPositions(self, equities):
-        timePosition = []
+    def recordPosition(self, instrumentSymbol, value, numPositions ):
+        """
+        records the position on given instrument 
 
-        for i, equity in enumerate(equities):
+        Input:
+        value           :   the current value of the 
+        numPositions    :   the number of positions held on instrument
+        """
 
-            if self.equityPositions[0] is not equity.symbol:
-                raise Exception("Symbol matrix doesn't match up")
+        info = [value, numPositions]
+        self.positions[instrumentSymbol].append( info )
 
-            timePosition.append([equity.currentValue, equity.numPositions])
+    def calculateValue(self):
+        """
+        Calculates the current value of all assets, frozen and liquid
+        """
 
-        self.equityPositions.append(timePosition)
-        
+        amount = self.liquid[-1]
+        for data in self.positions
+            amount += data[-1][0]*data[-1][1]
+
+        self.value.append(amount)
+
+    

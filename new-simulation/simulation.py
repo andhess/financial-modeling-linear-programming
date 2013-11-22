@@ -35,7 +35,7 @@ def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weig
     (float)     closePrice      :   the price at which the instrument closed at for the period
 
     weights = [ feature-1, feature-2, ... , feature-n ]
-        (string) feature-k  :   name of the  
+        (string) feature-k  :   name of the feature considered in the model 
 
     """
 
@@ -74,6 +74,12 @@ def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weig
         # get description
 
         # make decision
+
+        # record positions
+        for instrument in common.portfolio:
+            common.positionHistory.recordPosition( instrument.symbol, instrument.currentValue, instrument.numPositions )
+
+        common.positionHistory.calculateValue()
 
         common.time += 1
 
