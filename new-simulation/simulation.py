@@ -21,6 +21,7 @@ def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weig
     Explanation of data:
 
     data = [ [instrument-0], [instrument-1], [instrument-2], ... , [instrument-n] ]
+    
     [array] instrument-i = [ tickerSymbol, [tick-0],[tick-1], ... , [tick-n] ]
     
     (String) tickerSymbol   :   the symbol that refers to the given financial instrument

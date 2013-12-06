@@ -1,5 +1,7 @@
 import math
 import datetime
+import KalmanFilter
+import LinearFilter
 
 class DescriptionModel( object ):
     
@@ -45,6 +47,10 @@ class DescriptionModel( object ):
             return self.getAcceleration( time )
         elif feature == "velocity":
             return self.getVelocity( time )
+        elif feature == "kalman":
+            return self.getKalmanFilter( time )
+        elif feature == "linear":
+            return self.getLinearFilter( time )
         else:
             return 0
 
