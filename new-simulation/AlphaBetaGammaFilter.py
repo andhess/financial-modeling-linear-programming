@@ -33,6 +33,7 @@ class AlphaBetaGammaFilter():
         gamma = self.getGamma(alpha, beta)
 
         # Uncomment to record all predicted values 
+        actualValues = []
         predictedValues = []
 
         # Instantiate variables since they will be used each iteration
@@ -51,15 +52,16 @@ class AlphaBetaGammaFilter():
             Xp = self.getXp(Xs, Vs, As)
             Vp = self.getVp(Vs, As)
 
-            # Uncomment to store predicted values
-            predictedValues.append(Xp)
-
             # Smooth and update based on measurement
             data = self.rawData[i]
             residual = self.getResidual(data, Xp)
             Xs = self.getXs(Xp, residual, alpha)
             Vs = self.getVs(Vp, residual, beta)
             As = self.getAs(As, residual, gamma)
+
+            # Uncomment to store predicted values
+            predictedValues.append(Xp)
+            actualValues.append(data)
     
         # Get the final projected value based on calculated values
         Xp = self.getXp(Xs, Vs, As)
@@ -67,10 +69,11 @@ class AlphaBetaGammaFilter():
         # Uncomment to return all predicted values. Note, don't store the predictedValues 
         # array since self.rawData and predictedValues will be different sizes. 
         # print predictedValues
+        return (actualValues, predictedValues)
         # return predictedValues
 
-        print Xp
-        return Xp
+        # print Xp
+        # return Xp
 
     def getXp(self, Xs_minus, Vs_minus, As_minus):
         """ Calculate Xp for the AlphaBetaGamma Algorithm """

@@ -1,6 +1,18 @@
 import common
 import portolioItem
 import investmentStrategy
+import description
+import TradeAlgorithm
+
+
+rawReadData = []
+ticker = "PEP"
+dataPath = "./../Historical-Datal/" + PEP + ".txt"
+description.readDataFromFile(dataPath, rawReadData)
+data = description.getOpenPriceHistory(rawReadData)
+
+ta = TradingAlgorithm(data)
+
 
 def simulateTradingStrategy( data, startTime, desiredReturn, riskTolerance, weights ):
     """
