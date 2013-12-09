@@ -59,7 +59,7 @@ class WienerPredictor():
             return self.wMinErrorBrute(100)
 
         elif method == "superBrute":
-            return self.wMinErrorBrute(1000)
+            return self.wMinErrorBrute(10000)
 
         else:
             raise Exception()
@@ -102,7 +102,7 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i] * (self.data[t+i-l][1] + self.noise[i-l])
+                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l])
 
                 predict += j/10.0 * (self.data[t][1] + self.noise[0])
                 error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
@@ -115,7 +115,7 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i] * (self.data[t+i-l][1] + self.noise[i-l] )
+                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l] )
 
                 predict += ( min1/10.0 + (k - 11)/100.0) * (self.data[t][1] + self.noise[0])
                 error2[k] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
