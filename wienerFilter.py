@@ -61,8 +61,34 @@ class WienerPredictor():
         elif method == "superBrute":
             return self.wMinErrorBrute(10000)
 
+        elif method == "bruteAlt":
+            return self.wMinErrorBruteAlt(100)
+
+        elif method == "superBruteAlt":
+            return self.wMinErrorBruteAlt(10000)
+
         else:
             raise Exception()
+
+    def wMinErrorBruteAlt(self, precision):
+        t = self.time - self.steps
+        alpha = [0] * self.steps
+        
+        for i in range(self.steps):
+
+            error = [0] * (precision + 1)
+            for j in range(precision + 1):
+
+                predict = 0
+                for l in range(self.steps):
+                    predict += (1.0 * j)/precision * (self.data[t+i-l][1] + self.noise[i-l])
+
+                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
+
+            alpha[i] = ( 1.0 * min( enumerate(error), key=itemgetter(1))[0] ) / precision
+
+        return alpha
+
 
 
     def wMinErrorBrute(self, precision):
@@ -139,10 +165,10 @@ class WienerPredictor():
     def setNoise(self, nType):
         noise = []
         if nType == "white":
-            for i in range(self.steps):
+            for i in range(len(self.data)):
                 noise.append( random.gauss(0, self.sigma) )
         else:
-            for i in range(self.steps):
+            for i in range(len(self.data)):
                 noise.append( 0 )
 
         self.noise = noise
