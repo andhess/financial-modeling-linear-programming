@@ -61,10 +61,10 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i]*self.data[t+l]
+                    predict += alpha[i]*(self.data[t+i-l] + self.noise[i-l])
 
-                predict += (1.0 * j)/precision * self.data[t]
-                error[j] = math.pow( ( self.data[i+1] - predict ) , 2)
+                predict += (1.0 * j)/precision * (self.data[t] + self.noise[0])
+                error[j] = math.pow( ( self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
 
             alpha[i] = (1.0*min( enumerate(error), key=itemgetter(1))[0]) / precision
 
@@ -82,10 +82,10 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i]*self.data[t+l]
+                    predict += alpha[i]*(self.data[t+i-l] + self.noise[i-l])
 
-                predict += j/10.0 * self.data[t]
-                error[j] = math.pow( ( self.data[i+1] - predict ) , 2)
+                predict += j/10.0 * (self.data[t] + noise[0]
+                error[j] = math.pow( ( self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
 
             min1 = min( enumerate(error), key=itemgetter(1))[0]
 
@@ -94,10 +94,10 @@ class WienerPredictor():
                 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i]*self.data[t+l]
+                    predict += alpha[i] * (self.data[t+i-l] + self.noise[i-l] )
 
-                predict += (min1/10.0 + (k - 11)/100.0) * self.data[t]
-                error[j] = math.pow( ( self.data[i+1] - predict ) , 2)
+                predict += (min1/10.0 + (k - 11)/100.0) * (self.data[t] + self.noise[0])
+                error[j] = math.pow( ( (self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
 
             min2 = min( enumerate(error2), key=itemgetter(1))[0]
 
