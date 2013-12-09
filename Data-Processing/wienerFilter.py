@@ -29,7 +29,7 @@ class WienerPredictor():
 
     def getW(self, method):
 
-        if method == 1:
+        if method == "matrices":
             Rx = self.constructRx()
             rdx = self.constructrdx()
             w = Rx.i * rdx
@@ -37,10 +37,41 @@ class WienerPredictor():
 
             return [ i[0] for i in w ]
 
-        else:
-            return wMinError()
+        elif method == "hueristic":
+            return wMinErrorHueristic()
 
-    def wMinError(self):
+        elif method == "brute":
+            return wMinErrorBrute(100)
+
+        elif method == "superBrute":
+            return wMinErrorBrute(1000)
+
+        else:
+            raise Exception()
+
+
+    def wMinErrorBrute(self, precision):
+        t = self.time - self.steps
+        alpha = [0] * self.steps
+        
+        for i in range(self.steps):
+
+            error = [0] * (precision+ 1)
+            for j in range(precision + 1):
+
+                predict = 0
+                for l in range(i):
+                    predict += alpha[i]*self.data[t+l]
+
+                predict += (1.0 * j)/precision * self.data[t]
+                error[j] = math.pow( ( self.data[i+1] - predict ) , 2)
+
+            alpha[i] = (1.0*min( enumerate(error), key=itemgetter(1))[0]) / precision
+
+        return alpha
+
+
+    def wMinErrorHeuristic(self):
         t = self.time - self.steps
         alpha = [0] * self.steps
         
