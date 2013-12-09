@@ -1,8 +1,9 @@
 import numpy as np
 import scipy as sc
-import matplotlib as plt
+#import matplotlib as plt
 import random
 import time
+import math
 from operator import itemgetter
 
 class WienerPredictor():
@@ -10,7 +11,7 @@ class WienerPredictor():
     def __init__(self, data):
         self.data = data
 
-    def filter(self, time, steps, noise=False, sigma=1, method):
+    def filter(self, time, steps, method, noise=False, sigma=1):
         
         self.steps = steps
         self.sigma = sigma
@@ -23,7 +24,7 @@ class WienerPredictor():
         prediction = 0
 
         for i in range(steps):
-            prediction += w[i] * self.data[time-i]
+            prediction += w[i] * self.data[time-i][1]
 
         return prediction
 
@@ -37,14 +38,14 @@ class WienerPredictor():
 
             return [ i[0] for i in w ]
 
-        elif method == "hueristic":
-            return wMinErrorHueristic()
+        elif method == "heuristic":
+            return self.wMinErrorHueristic()
 
         elif method == "brute":
-            return wMinErrorBrute(100)
+            return self.wMinErrorBrute(100)
 
         elif method == "superBrute":
-            return wMinErrorBrute(1000)
+            return self.wMinErrorBrute(1000)
 
         else:
             raise Exception()
@@ -56,24 +57,29 @@ class WienerPredictor():
         
         for i in range(self.steps):
 
-            error = [0] * (precision+ 1)
+            error = [0] * (precision + 1)
             for j in range(precision + 1):
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i]*(self.data[t+i-l] + self.noise[i-l])
+                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l])
 
-                predict += (1.0 * j)/precision * (self.data[t] + self.noise[0])
-                error[j] = math.pow( ( self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
+                predict += (1.0 * j)/precision * (self.data[t][1] + self.noise[0])
+                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
 
-            alpha[i] = (1.0*min( enumerate(error), key=itemgetter(1))[0]) / precision
+            alpha[i] = ( 1.0 * min( enumerate(error), key=itemgetter(1))[0] ) / precision
 
         return alpha
 
 
-    def wMinErrorHeuristic(self):
+    def wMinErrorHueristic(self):
         t = self.time - self.steps
         alpha = [0] * self.steps
+
+        print 'time:  ' , self.time
+        print 't:  ' , t
+        print 'alpha:  ' , alpha
+        print 'noise:  ' , self.noise
         
         for i in range(self.steps):
 
@@ -82,22 +88,22 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i]*(self.data[t+i-l] + self.noise[i-l])
+                    predict += alpha[i] * (self.data[t+i-l][1] + self.noise[i-l])
 
-                predict += j/10.0 * (self.data[t] + noise[0]
-                error[j] = math.pow( ( self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
+                predict += j/10.0 * (self.data[t][1] + self.noise[0])
+                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
 
             min1 = min( enumerate(error), key=itemgetter(1))[0]
 
             error2 = [0] * 21
             for k in range(21):
-                
+
                 predict = 0
                 for l in range(i):
-                    predict += alpha[i] * (self.data[t+i-l] + self.noise[i-l] )
+                    predict += alpha[i] * (self.data[t+i-l][1] + self.noise[i-l] )
 
-                predict += (min1/10.0 + (k - 11)/100.0) * (self.data[t] + self.noise[0])
-                error[j] = math.pow( ( (self.data[i+1] + self.noise[i+1] ) - predict ) , 2)
+                predict += ( min1/10.0 + (k - 11)/100.0) * (self.data[t][1] + self.noise[0])
+                error2[k] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
 
             min2 = min( enumerate(error2), key=itemgetter(1))[0]
 
@@ -106,12 +112,10 @@ class WienerPredictor():
         return alpha
 
     def constructRx(self):
-
+        pass
 
     def constructrdx(self):
-
-
-
+        pass
 
     def setNoise(self, nType):
         noise = []

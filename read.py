@@ -54,7 +54,7 @@ def readDataFromFile(fileName, outputList):
         lowPrice = float(snapshot[4])
         closePrice = float(snapshot[5])
 
-        entry.append((timestamp, openPrice, highPrice, lowPrice, closePrice))
+        entry.extend([timestamp, openPrice, highPrice, lowPrice, closePrice])
 
 #        if len(snapshot) > 6:
 #            tradeVolume = int(snapshot[6])
@@ -70,6 +70,6 @@ def readDataFromFile(fileName, outputList):
 
     fl.close()
 
-data = []
-readDataFromFile('./Historical-Datal/fb.txt', data)
-print data
+#data = []
+#readDataFromFile('./Historical-Datal/fb.txt', data)
+#print data
