@@ -22,8 +22,10 @@ class WienerPredictor():
         w = self.getW(method)
 
         prediction = 0
+        print 'w  : ' , w
 
         for i in range(steps):
+            print (time-i)
             prediction += w[i] * self.data[time-i][1]
 
         return prediction
@@ -94,6 +96,7 @@ class WienerPredictor():
                 error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
 
             min1 = min( enumerate(error), key=itemgetter(1))[0]
+            print 'error:  ' , error
 
             error2 = [0] * 21
             for k in range(21):
@@ -105,9 +108,13 @@ class WienerPredictor():
                 predict += ( min1/10.0 + (k - 11)/100.0) * (self.data[t][1] + self.noise[0])
                 error2[k] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
 
+            print 'error2:  ' , error2
             min2 = min( enumerate(error2), key=itemgetter(1))[0]
 
             alpha[i] = min1/10.0 + (min2 - 11)/100.0
+            print 'alpha:  ' , alpha[i]
+            print alpha
+            print '----------'
 
         return alpha
 
