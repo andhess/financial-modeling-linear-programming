@@ -6,6 +6,18 @@ import time
 import math
 from operator import itemgetter
 
+# to test the wienerFilter, open python in terminal and paste these commands
+
+# import read
+# import wienerFilter
+# data = []
+# read.readDataFromFile('./Historical-Datal/fb.txt', data)
+# del data[0]
+# test = wienerFilter.WienerPredictor(data)
+# test.filter(10,4,"heuristic")
+
+
+
 class WienerPredictor():
     """ An implementation of the wiener filter. """
     def __init__(self, data):
