@@ -38,7 +38,7 @@ class WienerPredictor():
 
         for i in range(steps):
             print (time-i)
-            prediction += w[i] * self.data[time-i][1]
+            prediction += w[i] * ( self.data[time-i][1] + self.noise[time-i] )
 
         return prediction
 
