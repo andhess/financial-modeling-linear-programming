@@ -136,11 +136,11 @@ class TradingAlgorithm():
 
 
     def run(self):
-        # abgFilter = AlphaBetaGammaFilter(self.data[0],self.data[1],0.65)
+        abgFilter = AlphaBetaGammaFilter(self.data[0],self.data[1],0.65)
 
-        filterLength = 3000
+        filterLength = 2000
         stepLen = 1
-        lf = LinearFilter(self.data,filterLength,stepLen)
+        # lf = LinearFilter(self.data,filterLength,stepLen)
 
         ticker = "PEP"
         # simulate over the range of the data
@@ -148,14 +148,14 @@ class TradingAlgorithm():
         projectedPrice = 0
         for t in range(len(self.data)-2):
             currentPrice = self.data[t]
-            # projectedPrice = abgFilter.getProjectedValue(currentPrice)
-            projectedPrice = lf.applyFilter(t)
+            projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            # projectedPrice = lf.applyFilter(t)
 
 
             print "\nIteration t =",t
             # print "Current price of", currentPrice, " projecting", projectedPrice
 
-            if projectedPrice > currentPrice:
+            if projectedPrice > currentPrice and projectedPrice - currentPrice > .1:
                 # buy
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
                     print "Buying at", currentPrice, " projecting", projectedPrice
@@ -163,7 +163,7 @@ class TradingAlgorithm():
                     # self.printPortfolio()
                 else:
                     print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
-            elif projectedPrice < currentPrice:
+            elif projectedPrice < currentPrice and currentPrice - projectedPrice > .1:
                 # sell
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
                     print "Selling at", currentPrice, " projecting", projectedPrice
@@ -174,15 +174,18 @@ class TradingAlgorithm():
             else:
                 # hold
                 print "hold"
-        self.printPortfolio()
+        self.printPortfolio(currentPrice)
 
-    def printPortfolio(self):
+    def printPortfolio(self, currentPrice):
         print "Current portfolio status:"
         print "Number assets =", len(self.portfolio.assets), " with availableCapital =",self.portfolio.availableCapital
+        tot = 0
         for a in self.portfolio.assets:
             print "\t",a.unitsOwned, " units of", a.ticker, "owned."
+            tot += a.unitsOwned * currentPrice
         #     for o in a.orderHistory:
         #         print "\t\t", o.orderType, "", o.count, "at", o.purchasePrice
+        print "Total Value =", self.portfolio.availableCapital + tot
 
 
 
