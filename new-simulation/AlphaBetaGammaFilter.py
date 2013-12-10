@@ -23,11 +23,48 @@ class AlphaBetaGammaFilter():
     should produce a projected value of 274637.135035
     
     """
-    def __init__(self, rawData):
+    def __init__(self, firstPoint, secondPoint, alpha):
         """ Initialize the filter with model data. """
-        self.rawData = rawData
+        # self.rawData = rawData
+        self.predictions = []
+        self.updateParameters = []
 
-    def getProjectedValue(self, alpha):
+        # calculate beta and gamma based off alpha
+        self.alpha = alpha
+        self.beta = self.getBeta(alpha)
+        self.gamma = self.getGamma(alpha, self.beta)
+
+        # Instantiate variables since they will be used each iteration
+        Xp, Vp, Residual, Xs, Vs, As =  None, None, None, None, None, None
+
+        # Set up the initial iteration
+        data = secondPoint
+        Xp = self.getXp(firstPoint, 0.0, 0.0)
+        Xs = secondPoint
+        Vs = secondPoint - firstPoint
+        As = 0.0
+
+        self.updateParameters.append( (Xs, Vs, As) )
+
+
+    def getProjectedValue(self, data):
+        Xs, Vs, As = self.updateParameters[-1]
+
+        # Calculate predicted values based on previous state
+        Xp = self.getXp(Xs, Vs, As)
+        Vp = self.getVp(Vs, As)
+
+        # Smooth and update based on measurement
+        residual = self.getResidual(data, Xp)
+        Xs = self.getXs(Xp, residual, self.alpha)
+        Vs = self.getVs(Vp, residual, self.beta)
+        As = self.getAs(As, residual, self.gamma)
+
+        self.updateParameters.append( (Xs, Vs, As) )
+        self.predictions.append(Xp)
+        return Xp
+
+    def getProjectedValues(self, alpha):
         # calculate beta and gamma based off alpha
         beta = self.getBeta(alpha)
         gamma = self.getGamma(alpha, beta)

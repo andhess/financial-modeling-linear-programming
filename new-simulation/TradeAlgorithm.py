@@ -1,5 +1,6 @@
 import numpy as np
 from AlphaBetaGammaFilter import AlphaBetaGammaFilter
+import random
 
 class Order():
     """ A datatype for an order object 
@@ -62,7 +63,7 @@ class Porfolio():
         # handle a buy order
         if orderType == "BUY":
             # check to see if we have the available capital
-            if availableCapital > order.getTotalValue():
+            if self.availableCapital > order.getTotalValue():
                 # subtract the order value from the capital pool
                 self.availableCapital -= order.getTotalValue()
                 
@@ -122,6 +123,7 @@ class Porfolio():
                         return False
             if not inPortfolio:
                 return False
+        return True
 
 
 class TradingAlgorithm():
@@ -133,32 +135,47 @@ class TradingAlgorithm():
 
 
     def run(self):
-        # abgFilter = AlphaBetaGammaFilter(data)
+        abgFilter = AlphaBetaGammaFilter(self.data[0],self.data[1],0.65)
 
-        ticker = "PEP"
+        ticker = "AAPL"
         # simulate over the range of the data
-        for t in range(data):
-            currentPrice = data[t]
-            projectedPrice = abgFilter.getProjectedValue(t)
-            
+        currentPrice = 0
+        projectedPrice = 0
+        for t in range(len(self.data)-2):
+            currentPrice = self.data[t]
+            # projectedPrice = self.data[t+1]
+            projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            print "\nIteration t =",t
+            # print "Current price of", currentPrice, " projecting", projectedPrice
+
             if projectedPrice > currentPrice:
                 # buy
-                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY")
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
+                    print "Buying at", currentPrice, " projecting", projectedPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
+                    # self.printPortfolio()
                 else:
-                    print "order not valid"
+                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
             elif projectedPrice < currentPrice:
                 # sell
-                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL")
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                    print "Selling at", currentPrice, " projecting", projectedPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
+                    # self.printPortfolio()
                 else:
-                    print "order not valid"
+                    print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
             else:
                 # hold
                 print "hold"
+        self.printPortfolio()
 
-
-
+    def printPortfolio(self):
+        print "Current portfolio status:"
+        print "Number assets =", len(self.portfolio.assets), " with availableCapital =",self.portfolio.availableCapital
+        for a in self.portfolio.assets:
+            print "\t",a.unitsOwned, " units of", a.ticker, "owned."
+        #     for o in a.orderHistory:
+        #         print "\t\t", o.orderType, "", o.count, "at", o.purchasePrice
 
 
 
