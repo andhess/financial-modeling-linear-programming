@@ -185,5 +185,94 @@ class TradingAlgorithm():
         #         print "\t\t", o.orderType, "", o.count, "at", o.purchasePrice
 
 
+class DoubleMovingAverage(TradingAlgorithm):
+    """ Docstring for Double Moving Average"""
 
+    def run(self, noise=False, longW, shortW):
+
+        ticker = "PEP"
+
+        # simulate over the range of the data
+        currentPrice = 0
+        projectedPrice = 0
+        self.addNoise = noise
+        self.setNoise()
+        self.longW = longW
+        self.shortW = shortW
+
+        prevDiff = 0
+
+        for t in range( len( self.data ) - 2 ):
+
+            currentPrice = self.data[t]
+            shortAvg = self.calcAverage(t, "short")
+            longAvg = self.calcAverage(t, "long")
+            currentDiff = longAvg - shortAvg
+
+            print "\nIteration t:  " , t
+
+            if t == 0:
+                continue
+
+            # lines aren't crossing, do nothing
+            if currentDiff > 0 and prevDiff > 0:
+                continue
+
+            # lines aren't crossing, do nothing
+            elif currentDiff <= 0 and prevDiff <= 0:
+                continue
+
+            # sell!
+            elif currentDiff > 0 and prevDiff <= 0:
+                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                    print "Selling at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
+                    # self.printPortfolio()
+                else:
+                    print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+
+            # buy!
+            elif currentDiff <= 0 and prevDiff > 0:
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
+                    print "Buying at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
+                    # self.printPortfolio()
+                else:
+                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
+
+            # shouldn't get here ever
+            else:
+                raise Exception("something wrong buy-sell cases")
+
+            # update the previous values for the next state
+            prevDiff = currentDiff
+
+        self.printPortfolio()
+
+
+    def calcAverage(self, time, window):
+
+        if window == "long":
+            avg = np.array( self.data[time-self.longW:time+1] )
+        else:
+            avg = np.array( self.data[time-self.shortW:time+1] )
+        if self.addNoise:
+            if window == "long":
+                return np.average( avg + np.array( self.noise[time-self.longW:time+1] ) )
+            else:
+                return np.average( avg + np.array( self.noise[time-self.shortW:time+1] ) )
+        else:
+            return np.average( avg )
+
+
+    def setNoise(self):
+        noise = []
+        if self.addNoise:
+            for i in range(len(self.data)):
+                noise.append( random.gauss(0, self.sigma) )
+        else:
+            for i in range( len( self.data ) ):
+                noise.append( 0 )
+
+        self.noise = noise
 
