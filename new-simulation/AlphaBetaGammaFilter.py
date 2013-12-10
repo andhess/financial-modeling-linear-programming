@@ -12,11 +12,14 @@ class AlphaBetaGammaFilter():
 
     ________________Parameters________________
 
-    rawData         :       The model data to estimate
-    alpha           :       The estimation parameter - optimal value to be determined experimentally. 
+    firstPoint      : The first point the data
+    secondPoint     : The second point in the data
+    alpha           : The estimation parameter
 
 
     Example...
+
+    abg = AlphaBetaGammaFilter(208000.0, 207000.0, 0.41)
 
     rawData = [208000.0, 207000.0, 217000.0, 204000.0, 216000.0, 229000.0, 229000.0, 242000.0, 310000.0, 241000.0, 245000.0, 247000.0, 259000.0, 257000.0, 299000.0, 245000.0, 255000.0]
 
@@ -63,54 +66,6 @@ class AlphaBetaGammaFilter():
         self.updateParameters.append( (Xs, Vs, As) )
         self.predictions.append(Xp)
         return Xp
-
-    def getProjectedValues(self, alpha):
-        # calculate beta and gamma based off alpha
-        beta = self.getBeta(alpha)
-        gamma = self.getGamma(alpha, beta)
-
-        # Uncomment to record all predicted values 
-        actualValues = []
-        predictedValues = []
-
-        # Instantiate variables since they will be used each iteration
-        Xp, Vp, Residual, Xs, Vs, As =  None, None, None, None, None, None
-
-        # Set up the initial iteration
-        data = self.rawData[1]
-        Xp = self.getXp(self.rawData[0], 0.0, 0.0)
-        Xs = self.rawData[1]
-        Vs = self.rawData[1] - self.rawData[0]
-        As = 0.0
-
-        # Run the algorithm to find the projected value
-        for i in range(2, len(self.rawData)):
-            # Calculate predicted values based on previous state
-            Xp = self.getXp(Xs, Vs, As)
-            Vp = self.getVp(Vs, As)
-
-            # Smooth and update based on measurement
-            data = self.rawData[i]
-            residual = self.getResidual(data, Xp)
-            Xs = self.getXs(Xp, residual, alpha)
-            Vs = self.getVs(Vp, residual, beta)
-            As = self.getAs(As, residual, gamma)
-
-            # Uncomment to store predicted values
-            predictedValues.append(Xp)
-            actualValues.append(data)
-    
-        # Get the final projected value based on calculated values
-        Xp = self.getXp(Xs, Vs, As)
-
-        # Uncomment to return all predicted values. Note, don't store the predictedValues 
-        # array since self.rawData and predictedValues will be different sizes. 
-        # print predictedValues
-        return (actualValues, predictedValues)
-        # return predictedValues
-
-        # print Xp
-        # return Xp
 
     def getXp(self, Xs_minus, Vs_minus, As_minus):
         """ Calculate Xp for the AlphaBetaGamma Algorithm """
