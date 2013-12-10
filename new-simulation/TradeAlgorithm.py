@@ -1,6 +1,7 @@
 import numpy as np
 from AlphaBetaGammaFilter import AlphaBetaGammaFilter
 import random
+from LinearFilter import LinearFilter
 
 class Order():
     """ A datatype for an order object 
@@ -135,16 +136,22 @@ class TradingAlgorithm():
 
 
     def run(self):
-        abgFilter = AlphaBetaGammaFilter(self.data[0],self.data[1],0.65)
+        # abgFilter = AlphaBetaGammaFilter(self.data[0],self.data[1],0.65)
 
-        ticker = "AAPL"
+        filterLength = 3000
+        stepLen = 1
+        lf = LinearFilter(self.data,filterLength,stepLen)
+
+        ticker = "PEP"
         # simulate over the range of the data
         currentPrice = 0
         projectedPrice = 0
         for t in range(len(self.data)-2):
             currentPrice = self.data[t]
-            # projectedPrice = self.data[t+1]
-            projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            # projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            projectedPrice = lf.applyFilter(t)
+
+
             print "\nIteration t =",t
             # print "Current price of", currentPrice, " projecting", projectedPrice
 
