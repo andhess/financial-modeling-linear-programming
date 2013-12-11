@@ -28,8 +28,10 @@ def showDualLineGraph(data1, data2):
 
 
 dataList = []
-#tickerList = ["PEP", "aapl", "ACN", "CAT", "F", "M", "UPS", "PCLN", "CPB"]
-tickerList = ["F"]
+tickerList = ["F", "aapl", "ACN", "CAT", "F", "M", "UPS", "PCLN", "CPB"]
+# tickerList = ["F"]
+
+returns = []
 
 for ticker in tickerList:
     rawReadData = []
@@ -38,5 +40,30 @@ for ticker in tickerList:
     data = description.getOpenPriceHistory(rawReadData)
     dataList.append(data)
 
-ta = TradingAlgorithm(dataList, tickerList)
-ta.run()
+    ta = TradingAlgorithm(data, ticker)
+    buyCount, sellCount, totalReturn, actual, predicted = ta.run()
+    # print totalReturn
+    returns.append(totalReturn)
+
+print tickerList
+print returns
+
+    # # test alpha
+    # params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
+    # for p in params:
+    #     ta = TradingAlgorithm(data, ticker)
+    #     buyCount, sellCount, totalReturn, actual, predicted = ta.testParameter(p)
+    #     print totalReturn
+
+
+
+
+
+
+
+
+
+
+
+
+

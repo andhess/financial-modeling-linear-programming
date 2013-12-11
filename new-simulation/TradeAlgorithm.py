@@ -52,9 +52,9 @@ class Porfolio():
     assets              : a list of assets in the portfolio
     availableCapital    : total amount of capital available to invest
     """
-    def __init__(self):
+    def __init__(self, capital):
         self.assets = []
-        self.availableCapital = 100000
+        self.availableCapital = capital
 
     def placeOrder(self, ticker, count, price, orderType):
         """ Handle both buy and sell orders """
@@ -126,14 +126,17 @@ class Porfolio():
                 return False
         return True
 
+    def exitAll(self, lastPrice):
+        for asset in self.assets:
+            value = asset.unitsOwned * lastPrice
 
 class TradingAlgorithm():
     """docstring for TradingAlgorithm"""
-    def __init__(self, dataList, tickerList):
-        self.dataList = dataList
-        self.tickerList = tickerList
+    def __init__(self, data, ticker):
+        self.data = data
+        self.ticker = ticker
         self.capital = 100000
-        self.portfolio = Porfolio()
+        self.portfolio = Porfolio(self.capital)
 
 
     def run(self):
@@ -141,80 +144,133 @@ class TradingAlgorithm():
         sells = []
         tradeRates = []
         totReturns = []
-        actualPrices = []
-        predictedPrices = []
+        actual = []
+        predicted = []
 
-        for i in range(len(self.tickerList)):
-            oldAvailableCapital = self.portfolio.availableCapital
-            actual = []
-            predicted = []
+        data = self.data
+        ticker = self.ticker
 
-            data = self.dataList[i]
-            ticker = self.tickerList[i]
+        abgFilter = AlphaBetaGammaFilter(data[0],data[1],0.3)
 
-            abgFilter = AlphaBetaGammaFilter(data[0],data[1],0.65)
+        filterLength = 2000
+        stepLen = 1
+        # lf = LinearFilter(data,filterLength,stepLen)
 
-            filterLength = 2000
-            stepLen = 1
-            # lf = LinearFilter(data,filterLength,stepLen)
-
-            # simulate over the range of the data
-            currentPrice = 0
-            projectedPrice = 0
-            buyCount = 0
-            sellCount = 0
-            for t in range(len(data)-2):
-                currentPrice = data[t]
-                actual.append(currentPrice)
-                projectedPrice = abgFilter.getProjectedValue(currentPrice)
-                # projectedPrice = lf.applyFilter(t)
-                predicted.append(projectedPrice)
+        # simulate over the range of the data
+        currentPrice = 0
+        projectedPrice = 0
+        buyCount = 0
+        sellCount = 0
+        for t in range(len(data)-2):
+            currentPrice = data[t]
+            actual.append(currentPrice)
+            projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            # projectedPrice = lf.applyFilter(t)
+            predicted.append(projectedPrice)
 
 
-                # print "\nIteration t =",t
-                # print "Current price of", currentPrice, " projecting", projectedPrice
+            # print "\nIteration t =",t
+            # print "Current price of", currentPrice, " projecting", projectedPrice
 
-                if projectedPrice > currentPrice and projectedPrice - currentPrice > .05:
-                    # buy
-                    if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
-                        # print "Buying at", currentPrice, " projecting", projectedPrice
-                        self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
-                        # self.printPortfolio()
-                        buyCount += 1
-                    else:
-                        print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
-                elif projectedPrice < currentPrice and currentPrice - projectedPrice > .05:
-                    # sell
-                    if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
-                        # print "Selling at", currentPrice, " projecting", projectedPrice
-                        self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
-                        # self.printPortfolio()
-                        sellCount += 1
-                    else:
-                        continue
-                        # print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+            if projectedPrice > currentPrice and projectedPrice - currentPrice > .05:
+                # buy
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
+                    # print "Buying at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
+                    # self.printPortfolio()
+                    buyCount += 1
                 else:
-                    # hold
+                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
+            elif projectedPrice < currentPrice and currentPrice - projectedPrice > .05:
+                # sell
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                    # print "Selling at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
+                    # self.printPortfolio()
+                    sellCount += 1
+                else:
                     continue
-                    # print "hold"
-            # print "Buys:", buyCount, "Sells:", sellCount
-            buys.append(buyCount)
-            sells.append(sellCount)
-            tradeRates.append((buyCount+sellCount) / 251.0)
-            totReturns.append(oldAvailableCapital-self.portfolio.availableCapital)
-            actualPrices.append(actual)
-            predictedPrices.append(predicted)
+                    # print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+            else:
+                # hold
+                continue
+                # print "hold"
 
-            # self.printPortfolio(currentPrice)
+        # self.printPortfolio(currentPrice)
 
-        # print self.tickerList
-        # print buys
-        # print sells
-        # print tradeRates
-        # print totReturns
-        # print actualPrices[0][400:500]
-        # print predictedPrices[0][400:500]
-        print [i for i in range(100)]
+        # sell all assets
+        self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+
+        tradeRate = (buyCount+sellCount) / 251.0
+        totalReturn = (self.portfolio.availableCapital - self.capital)
+        return (buyCount, sellCount, totalReturn, actual, predicted) 
+
+
+    def testParameter(self, parameter):
+        buys = []
+        sells = []
+        tradeRates = []
+        totReturns = []
+        actual = []
+        predicted = []
+
+        data = self.data
+        ticker = self.ticker
+
+        abgFilter = AlphaBetaGammaFilter(data[0],data[1],parameter)
+
+        filterLength = 2000
+        stepLen = 1
+        # lf = LinearFilter(data,filterLength,stepLen)
+
+        # simulate over the range of the data
+        currentPrice = 0
+        projectedPrice = 0
+        buyCount = 0
+        sellCount = 0
+        for t in range(len(data)-2):
+            currentPrice = data[t]
+            actual.append(currentPrice)
+            projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            # projectedPrice = lf.applyFilter(t)
+            predicted.append(projectedPrice)
+
+
+            # print "\nIteration t =",t
+            # print "Current price of", currentPrice, " projecting", projectedPrice
+
+            if projectedPrice > currentPrice and projectedPrice - currentPrice > .05:
+                # buy
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
+                    # print "Buying at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
+                    # self.printPortfolio()
+                    buyCount += 1
+                else:
+                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
+            elif projectedPrice < currentPrice and currentPrice - projectedPrice > .05:
+                # sell
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                    # print "Selling at", currentPrice, " projecting", projectedPrice
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
+                    # self.printPortfolio()
+                    sellCount += 1
+                else:
+                    continue
+                    # print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+            else:
+                # hold
+                continue
+                # print "hold"
+
+        # self.printPortfolio(currentPrice)
+
+        # sell all assets
+        self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+
+        tradeRate = (buyCount+sellCount) / 251.0
+        totalReturn = (self.portfolio.availableCapital - self.capital)
+        return (buyCount, sellCount, totalReturn, actual, predicted) 
 
 
     def printPortfolio(self, currentPrice):
@@ -232,7 +288,7 @@ class TradingAlgorithm():
 class DoubleMovingAverage(TradingAlgorithm):
     """ Docstring for Double Moving Average"""
 
-    def run(self, noise=False, longW, shortW):
+    def run(self, longW, shortW, noise=False):
 
         ticker = "PEP"
 
@@ -268,7 +324,7 @@ class DoubleMovingAverage(TradingAlgorithm):
 
             # sell!
             elif currentDiff > 0 and prevDiff <= 0:
-                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
                     print "Selling at", currentPrice, " projecting", projectedPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
                     # self.printPortfolio()
