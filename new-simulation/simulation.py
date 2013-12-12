@@ -2,6 +2,7 @@ import common
 import numpy as np
 import description
 from TradeAlgorithm import *
+import gc
 # import matplotlib.pyplot as plt
 
 
@@ -45,6 +46,45 @@ def getPercCorrectPredictions(actual, predicted):
         else:
             continue
     return count/length
+
+def DMATest():
+    returns = []
+    tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+    
+    for ticker in tickerList:
+        rawReadData = []
+        dataPath = "./../Historical-Datal/" + ticker + ".txt"
+        description.readDataFromFile(dataPath, rawReadData)
+        data = description.getOpenPriceHistory(rawReadData)
+
+
+        params = [ [25,50], [100,200] ]
+        for p in params:
+            ta = DoubleMovingAverage( data, ticker, "dma")
+            totalReturn = ta.run(p[1],p[0])
+            returns.append(totalReturn)
+
+    printForExcel(tickerList)
+    printForExcel(returns)
+
+def WienerNetProfit(stepSize, method):
+    returns = []
+    tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+
+    for ticker in tickerList:
+        gc.collect()
+        rawReadData = []
+        dataPath = "./../Historical-Datal/" + ticker + ".txt"
+        description.readDataFromFile(dataPath, rawReadData)
+        data = description.getOpenPriceHistory(rawReadData)
+    
+        ta = TradingAlgorithm(data, ticker, "Wiener")
+        totalReturn, actual, predicted = ta.run(stepSize, method)
+        returns.append(totalReturn)
+
+    printForExcel(tickerList)
+    printForExcel(returns)
+
 
 
 def ABGTestNetProfit(parameter):
@@ -118,43 +158,15 @@ def ABGTestAlpha():
     # printForExcel(returns)
 
 
-dataList = []
-tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
-# tickerList = ["F"]
-
-returns = []
-
-for ticker in tickerList:
-    rawReadData = []
-    dataPath = "./../Historical-Datal/" + ticker + ".txt"
-    description.readDataFromFile(dataPath, rawReadData)
-    data = description.getOpenPriceHistory(rawReadData)
-    dataList.append(data)
-
-    # ---- Testing for Wiener Filter
-    # ta = TradingAlgorithm(data, ticker, "Wiener")
-    # totalReturn, actual, predicted = ta.run()
-    # testParamReturns.append(totalReturn)
-
-    # ---- For Testing the Double Moving Average ----
-#    params = [ [25,50], [100,200] ]
-#    for p in params:
-#        ta = DoubleMovingAverage( data, ticker, "dma")
-#        totalReturn = ta.run(p[1],p[0])
-#        testParamReturns.append(totalReturn)
-#        # print 'totalReturn:  ' , totalReturn
-
-    # print "\n" + ticker 
-    # printForExcel(testParamReturns)
-
-
-
-
 def main():
     # Alpha Beta Gamma Tests
     # ABGTestNetProfit(0.8)
-    ABGTestPredVAct(0.2)
+    # ABGTestPredVAct(0.2)
     # ABGTestAlpha()
+    # DMATest()
+    WienerNetProfit(10, "heuristic")
+    # WienerTest(50)
+
 
 
 if __name__ == "__main__":
