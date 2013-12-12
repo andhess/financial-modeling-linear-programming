@@ -70,6 +70,7 @@ def DMATest():
 def WienerNetProfit(stepSize, method):
     returns = []
     tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+    #tickerList = ["CPB"]
 
     for ticker in tickerList:
         gc.collect()
@@ -84,6 +85,28 @@ def WienerNetProfit(stepSize, method):
 
     printForExcel(tickerList)
     printForExcel(returns)
+
+def WeinerPredVAct(parameter, method):
+    returns = []
+    ticker = "UPS"
+    
+    rawReadData = []
+    dataPath = "./../Historical-Datal/" + ticker + ".txt"
+    description.readDataFromFile(dataPath, rawReadData)
+    data = description.getOpenPriceHistory(rawReadData)
+
+    ta = TradingAlgorithm(data, ticker, "Wiener")
+    totalReturn, actual, predicted = ta.run(parameter, method)
+
+    # printForExcel([totalReturn])
+    # print ticker
+    printForExcel(actual)
+    print "XXXXXXXXXXXX"
+    print "XXXXXXXXXXXX"
+    printForExcel(predicted)
+    print "ZZZZZZ"
+    print totalReturn
+    # print getPercCorrectPredictions(actual, predicted)
 
 
 
@@ -112,7 +135,6 @@ def ABGTestPredVAct(parameter):
     dataPath = "./../Historical-Datal/" + ticker + ".txt"
     description.readDataFromFile(dataPath, rawReadData)
     data = description.getOpenPriceHistory(rawReadData)
-    dataList.append(data)
 
     ta = TradingAlgorithm(data, ticker, "abg")
     totalReturn, actual, predicted = ta.run(parameter)
@@ -164,7 +186,8 @@ def main():
     # ABGTestPredVAct(0.2)
     # ABGTestAlpha()
     # DMATest()
-    WienerNetProfit(10, "heuristic")
+    #WienerNetProfit(10, "heuristicAlt")
+    WeinerPredVAct(40, "heuristicAlt")
     # WienerTest(50)
 
 

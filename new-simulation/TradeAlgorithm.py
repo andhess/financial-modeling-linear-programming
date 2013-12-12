@@ -184,8 +184,8 @@ class TradingAlgorithm():
         projectedPrice = 0
         for t in range(start, len(data)-5):
 
-            # if t % 1000 == 0:
-            #     print t
+            #if t % 1000 == 0:
+            #    print t
 
             currentPrice = data[t]
             actual.append(currentPrice)
