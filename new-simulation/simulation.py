@@ -30,9 +30,96 @@ def printForExcel(data):
     for d in data:
         print d
 
+def getPercCorrectPredictions(actual, predicted):
+    length = min(len(actual), len(predicted)) - 1
+    count = 0.0
+    actualDiff = 0.0
+    predictedDiff = 0.0
+    for i in range(1, length):
+        actualDiff = actual[i]-actual[i-1]
+        predictedDiff = predicted[i]-predicted[i-1]    
+        if actualDiff > 0 and predictedDiff > 0:
+            count += 1.0
+        elif actualDiff < 0 and predictedDiff < 0:
+            count += 1.0
+        else:
+            continue
+    return count/length
+
+
+def ABGTestNetProfit(parameter):
+    returns = []
+    tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+    
+    for ticker in tickerList:
+        rawReadData = []
+        dataPath = "./../Historical-Datal/" + ticker + ".txt"
+        description.readDataFromFile(dataPath, rawReadData)
+        data = description.getOpenPriceHistory(rawReadData)
+    
+        ta = TradingAlgorithm(data, ticker, "abg")
+        totalReturn, actual, predicted = ta.run( parameter )
+        returns.append(totalReturn)
+
+    printForExcel(tickerList)
+    printForExcel(returns)
+
+def ABGTestPredVAct(parameter):
+    returns = []
+    ticker = "UPS"
+    
+    rawReadData = []
+    dataPath = "./../Historical-Datal/" + ticker + ".txt"
+    description.readDataFromFile(dataPath, rawReadData)
+    data = description.getOpenPriceHistory(rawReadData)
+    dataList.append(data)
+
+    ta = TradingAlgorithm(data, ticker, "abg")
+    totalReturn, actual, predicted = ta.run(parameter)
+
+    # printForExcel([totalReturn])
+    # print ticker
+    printForExcel(actual)
+    # printForExcel(predicted)
+    # print getPercCorrectPredictions(actual, predicted)
+
+def ABGTestAlpha():
+    returns = []
+    ticker = "UPS"
+    percentCorrectList = []
+
+    rawReadData = []
+    dataPath = "./../Historical-Datal/" + ticker + ".txt"
+    description.readDataFromFile(dataPath, rawReadData)
+    data = description.getOpenPriceHistory(rawReadData)
+    
+    # Param value Generator
+    params = []
+    numParams = 100.0
+    for i in range(1, int(numParams)):
+        increment = 1.0/numParams
+        params.append(i*increment)
+
+    # params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
+    for p in params:
+        ta = TradingAlgorithm(data, ticker, "abg")
+        totalReturn, actual, predicted = ta.run(p)
+        returns.append(totalReturn)
+        percentCorrectList.append(getPercCorrectPredictions(actual, predicted))
+
+    maxAlpha = params[returns.index(max(returns))]
+    maxPercentCorrect = percentCorrectList[returns.index(max(returns))]
+
+    print "Maximizing Alpha for", ticker," is", maxAlpha
+    print "Realized net profit of", max(returns)
+    print "Percentage Predictions Correct", maxPercentCorrect
+
+    # printForExcel(tickerList)
+    # printForExcel(returns)
+
 
 dataList = []
-tickerList = ["aapl"]#F"], "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
 # tickerList = ["F"]
 
 returns = []
@@ -44,25 +131,10 @@ for ticker in tickerList:
     data = description.getOpenPriceHistory(rawReadData)
     dataList.append(data)
 
-    # ta = TradingAlgorithm(data, ticker, "abg")
-    # totalReturn, actual, predicted = ta.run()
-    # returns.append(totalReturn)
-
-    # printForExcel(predicted)
-    # printForExcel(actual)
-
-    # test alpha
-    testParamReturns = []
-#    params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
-#    for p in params:
-#        ta = TradingAlgorithm(data, ticker, "abg")
-#        totalReturn, actual, predicted = ta.run(p)
-#        testParamReturns.append(totalReturn)
-
     # ---- Testing for Wiener Filter
-    ta = TradingAlgorithm(data, ticker, "Wiener")
-    totalReturn, actual, predicted = ta.run()
-    testParamReturns.append(totalReturn)
+    # ta = TradingAlgorithm(data, ticker, "Wiener")
+    # totalReturn, actual, predicted = ta.run()
+    # testParamReturns.append(totalReturn)
 
     # ---- For Testing the Double Moving Average ----
 #    params = [ [25,50], [100,200] ]
@@ -73,12 +145,20 @@ for ticker in tickerList:
 #        # print 'totalReturn:  ' , totalReturn
 
     # print "\n" + ticker 
-    printForExcel(testParamReturns)
+    # printForExcel(testParamReturns)
 
 
 
 
+def main():
+    # Alpha Beta Gamma Tests
+    # ABGTestNetProfit(0.8)
+    ABGTestPredVAct(0.2)
+    # ABGTestAlpha()
 
+
+if __name__ == "__main__":
+    main()
 
 
 

@@ -150,7 +150,7 @@ class TradingAlgorithm():
         ticker = self.ticker
 
         if parameter == None:
-            parameter = 0.25
+            parameter = 0.8
 
         # Kalman Filter / Alpha Beta Gamma Filter
         if self.algorithm == "abg":
@@ -183,8 +183,8 @@ class TradingAlgorithm():
         projectedPrice = 0
         for t in range(start, len(data)-5):
 
-            if t % 1000 == 0:
-                print t
+            # if t % 1000 == 0:
+            #     print t
 
             currentPrice = data[t]
             actual.append(currentPrice)
@@ -206,13 +206,13 @@ class TradingAlgorithm():
             # print "\nIteration t =",t
             # print "Current price of", currentPrice, " projecting", projectedPrice
 
-            if projectedPrice > currentPrice: #and projectedPrice - currentPrice > .05:
+            if projectedPrice > currentPrice:
                 # buy
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
                 else:
                     continue
-            elif projectedPrice < currentPrice: #and currentPrice - projectedPrice > .05:
+            elif projectedPrice < currentPrice:
                 # sell
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
@@ -223,8 +223,8 @@ class TradingAlgorithm():
                 continue
 
         # sell all assets
-        if len( self.portfolio.assets ) > 0:
-            self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+        for i in range(len(self.portfolio.assets)):
+            self.portfolio.placeOrder(ticker, self.portfolio.assets[i].unitsOwned, currentPrice, "SELL")
 
         totalReturn = (self.portfolio.availableCapital - self.capital)
         return (totalReturn, actual, predicted)
