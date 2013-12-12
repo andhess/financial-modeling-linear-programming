@@ -46,16 +46,15 @@ class AlphaBetaGammaFilter():
         Xs = secondPoint
         Vs = secondPoint - firstPoint
         As = 0.0
+        Vp = 0.0
 
-        self.updateParameters.append( (Xs, Vs, As) )
+        # old self.updateParameters.append( (Xs, Vs, As) )
+
+        self.updateParameters.append( (Xp, Vp, As) )
 
 
     def getProjectedValue(self, data):
-        Xs, Vs, As = self.updateParameters[-1]
-
-        # Calculate predicted values based on previous state
-        Xp = self.getXp(Xs, Vs, As)
-        Vp = self.getVp(Vs, As)
+        Xp, Vp, As = self.updateParameters[-1]
 
         # Smooth and update based on measurement
         residual = self.getResidual(data, Xp)
@@ -63,7 +62,11 @@ class AlphaBetaGammaFilter():
         Vs = self.getVs(Vp, residual, self.beta)
         As = self.getAs(As, residual, self.gamma)
 
-        self.updateParameters.append( (Xs, Vs, As) )
+        # Calculate predicted values based on previous state
+        Xp = self.getXp(Xs, Vs, As)
+        Vp = self.getVp(Vs, As)
+
+        self.updateParameters.append( (Xp, Vp, As) )
         self.predictions.append(Xp)
         return Xp
 

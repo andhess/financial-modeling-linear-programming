@@ -2,7 +2,7 @@ import common
 import numpy as np
 import description
 from TradeAlgorithm import *
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 def showHistogram(data):
@@ -26,9 +26,13 @@ def showDualLineGraph(data1, data2):
 
     plt.show()
 
+def printForExcel(data):
+    for d in data:
+        print d
+
 
 dataList = []
-tickerList = ["F", "aapl", "ACN", "CAT", "F", "M", "UPS", "PCLN", "CPB"]
+tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
 # tickerList = ["F"]
 
 returns = []
@@ -40,21 +44,27 @@ for ticker in tickerList:
     data = description.getOpenPriceHistory(rawReadData)
     dataList.append(data)
 
-    ta = TradingAlgorithm(data, ticker)
-    buyCount, sellCount, totalReturn, actual, predicted = ta.run()
-    # print totalReturn
-    returns.append(totalReturn)
+    # ta = TradingAlgorithm(data, ticker, "abg")
+    # totalReturn, actual, predicted = ta.run()
+    # returns.append(totalReturn)
 
-print tickerList
-print returns
+    # printForExcel(predicted)
+    # printForExcel(actual)
 
-    # # test alpha
-    # params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
-    # for p in params:
-    #     ta = TradingAlgorithm(data, ticker)
-    #     buyCount, sellCount, totalReturn, actual, predicted = ta.testParameter(p)
-    #     print totalReturn
+    # test alpha
+    testParamReturns = []
+    params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
+    for p in params:
+        ta = TradingAlgorithm(data, ticker, "abg")
+        totalReturn, actual, predicted = ta.run(p)
+        testParamReturns.append(totalReturn)
+    print "\n" + ticker 
+    printForExcel(testParamReturns)
 
+
+
+# printForExcel(tickerList)
+# printForExcel(returns)
 
 
 

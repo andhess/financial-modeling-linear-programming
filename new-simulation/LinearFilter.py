@@ -15,8 +15,11 @@ class LinearFilter():
         self.k = self.getFilter(self.s,self.r) 
 
     def getFilter(self, s, r):
-        sInv = np.linalg.pinv(s)
-        k = sInv*r
+        # sInv = np.linalg.pinv(s)
+        # k = sInv*r
+
+        right = s.transpose()*r
+        k = np.linalg.pinv(s.transpose()*s)*right
         return k       
 
     def buildSystem(self, filterLength, stepLength):
@@ -105,7 +108,7 @@ class LinearFilter():
         return (s,r)
 
 
-    def applyFilter(self, time):
+    def applyFilter(self, time, data):
         if time < self.filterLength:
             print "Time must be greater than the filterLength"
             return None
@@ -114,14 +117,14 @@ class LinearFilter():
         # print s
         chunk = []
         for i in range(self.filterLength):
-            chunk.append(self.data[time + 1 - self.filterLength + i])
+            chunk.append(data[time + 1 - self.filterLength + i])
         chunk = np.matrix(chunk)
 
         expectedValue = chunk * self.k
         return expectedValue.tolist()[0][0]
 
 
-# lf = LinearFilter([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-# print lf.applyFilter(12, 12)
+# lf = LinearFilter([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 5, 1)
+# print lf.applyFilter(6)
 
 

@@ -5,7 +5,7 @@ import datetime
 from AlphaBetaGammaFilter import AlphaBetaGammaFilter
 import scipy.stats
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 def readDataFromFile(fileName, outputList):
     # open the file from bloomberg

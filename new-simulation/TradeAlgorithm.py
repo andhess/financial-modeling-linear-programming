@@ -132,145 +132,76 @@ class Porfolio():
 
 class TradingAlgorithm():
     """docstring for TradingAlgorithm"""
-    def __init__(self, data, ticker):
+    def __init__(self, data, ticker, algorithm):
         self.data = data
         self.ticker = ticker
         self.capital = 100000
         self.portfolio = Porfolio(self.capital)
+        self.algorithm = algorithm
 
 
-    def run(self):
-        buys = []
-        sells = []
-        tradeRates = []
-        totReturns = []
+    def run(self, parameter=None):
         actual = []
         predicted = []
 
         data = self.data
         ticker = self.ticker
 
-        abgFilter = AlphaBetaGammaFilter(data[0],data[1],0.3)
+        if parameter == None:
+            parameter = 0.25
 
-        filterLength = 2000
-        stepLen = 1
-        # lf = LinearFilter(data,filterLength,stepLen)
-
-        # simulate over the range of the data
-        currentPrice = 0
-        projectedPrice = 0
-        buyCount = 0
-        sellCount = 0
-        for t in range(len(data)-2):
-            currentPrice = data[t]
-            actual.append(currentPrice)
-            projectedPrice = abgFilter.getProjectedValue(currentPrice)
-            # projectedPrice = lf.applyFilter(t)
-            predicted.append(projectedPrice)
-
-
-            # print "\nIteration t =",t
-            # print "Current price of", currentPrice, " projecting", projectedPrice
-
-            if projectedPrice > currentPrice and projectedPrice - currentPrice > .05:
-                # buy
-                if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
-                    # print "Buying at", currentPrice, " projecting", projectedPrice
-                    self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
-                    # self.printPortfolio()
-                    buyCount += 1
-                else:
-                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
-            elif projectedPrice < currentPrice and currentPrice - projectedPrice > .05:
-                # sell
-                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
-                    # print "Selling at", currentPrice, " projecting", projectedPrice
-                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
-                    # self.printPortfolio()
-                    sellCount += 1
-                else:
-                    continue
-                    # print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
-            else:
-                # hold
-                continue
-                # print "hold"
-
-        # self.printPortfolio(currentPrice)
-
-        # sell all assets
-        self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
-
-        tradeRate = (buyCount+sellCount) / 251.0
-        totalReturn = (self.portfolio.availableCapital - self.capital)
-        return (buyCount, sellCount, totalReturn, actual, predicted) 
-
-
-    def testParameter(self, parameter):
-        buys = []
-        sells = []
-        tradeRates = []
-        totReturns = []
-        actual = []
-        predicted = []
-
-        data = self.data
-        ticker = self.ticker
-
-        abgFilter = AlphaBetaGammaFilter(data[0],data[1],parameter)
-
-        filterLength = 2000
-        stepLen = 1
-        # lf = LinearFilter(data,filterLength,stepLen)
+        if self.algorithm == "abg":
+            abgFilter = AlphaBetaGammaFilter(data[0],data[1],parameter)
+            start = 0
+        elif self.algorithm == "linearModel":
+            filterLength = 2000
+            stepLen = 1
+            lf = LinearFilter(data[:len(data)/2],filterLength,stepLen)
+            start = len(data)/2
+        else:
+            print "No algorithm selected - Program Ending"
+            return
 
         # simulate over the range of the data
         currentPrice = 0
         projectedPrice = 0
-        buyCount = 0
-        sellCount = 0
-        for t in range(len(data)-2):
+        for t in range(start, len(data)-5):
             currentPrice = data[t]
             actual.append(currentPrice)
-            projectedPrice = abgFilter.getProjectedValue(currentPrice)
-            # projectedPrice = lf.applyFilter(t)
-            predicted.append(projectedPrice)
 
+            if self.algorithm == "abg":
+                projectedPrice = abgFilter.getProjectedValue(currentPrice)
+            elif self.algorithm == "linearModel":
+                projectedPrice = lf.applyFilter(t, data)
+            else:
+                return
+
+            predicted.append(projectedPrice)
 
             # print "\nIteration t =",t
             # print "Current price of", currentPrice, " projecting", projectedPrice
 
-            if projectedPrice > currentPrice and projectedPrice - currentPrice > .05:
+            if projectedPrice > currentPrice: #and projectedPrice - currentPrice > .05:
                 # buy
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
-                    # print "Buying at", currentPrice, " projecting", projectedPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
-                    # self.printPortfolio()
-                    buyCount += 1
-                else:
-                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
-            elif projectedPrice < currentPrice and currentPrice - projectedPrice > .05:
-                # sell
-                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
-                    # print "Selling at", currentPrice, " projecting", projectedPrice
-                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
-                    # self.printPortfolio()
-                    sellCount += 1
                 else:
                     continue
-                    # print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+            elif projectedPrice < currentPrice: #and currentPrice - projectedPrice > .05:
+                # sell
+                if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
+                    self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
+                else:
+                    continue
             else:
                 # hold
                 continue
-                # print "hold"
-
-        # self.printPortfolio(currentPrice)
 
         # sell all assets
         self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
 
-        tradeRate = (buyCount+sellCount) / 251.0
         totalReturn = (self.portfolio.availableCapital - self.capital)
-        return (buyCount, sellCount, totalReturn, actual, predicted) 
+        return (totalReturn, actual, predicted) 
 
 
     def printPortfolio(self, currentPrice):
