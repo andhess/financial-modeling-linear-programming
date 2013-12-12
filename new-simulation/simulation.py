@@ -32,7 +32,7 @@ def printForExcel(data):
 
 
 dataList = []
-tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+tickerList = ["aapl"]#F"], "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
 # tickerList = ["F"]
 
 returns = []
@@ -59,20 +59,22 @@ for ticker in tickerList:
 #        totalReturn, actual, predicted = ta.run(p)
 #        testParamReturns.append(totalReturn)
 
+    # ---- Testing for Wiener Filter
+    ta = TradingAlgorithm(data, ticker, "Wiener")
+    totalReturn, actual, predicted = ta.run()
+    testParamReturns.append(totalReturn)
 
     # ---- For Testing the Double Moving Average ----
-    params = [ [100,200] ]
-    for p in params:
-        ta = DoubleMovingAverage( data, ticker, "dma")
-        totalReturn = ta.run(p[1],p[0])
-        testParamReturns.append(totalReturn)
-        # print 'totalReturn:  ' , totalReturn
+#    params = [ [25,50], [100,200] ]
+#    for p in params:
+#        ta = DoubleMovingAverage( data, ticker, "dma")
+#        totalReturn = ta.run(p[1],p[0])
+#        testParamReturns.append(totalReturn)
+#        # print 'totalReturn:  ' , totalReturn
 
-    print "\n" + ticker 
+    # print "\n" + ticker 
     printForExcel(testParamReturns)
 
-
-printForExcel(tickerList)
 
 
 

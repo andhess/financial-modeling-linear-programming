@@ -25,20 +25,19 @@ class WienerPredictor():
 
     def filter(self, time, steps, method, noise=False, sigma=1):
         
-        self.steps = steps
+
+        self.steps = steps if time >= steps else time
         self.sigma = sigma
         self.time = time
         self.setNoise(noise)
 
-        
         w = self.getW(method)
 
         prediction = 0
-        print 'w  : ' , w
+        # print 'w  : ' , w
 
-        for i in range(steps):
-            print (time-i)
-            prediction += w[i] * ( self.data[time-i][1] + self.noise[time-i] )
+        for i in range(self.steps):
+            prediction += w[i] * ( self.data[time-i] + self.noise[time-i] )
 
         return prediction
 
@@ -65,7 +64,10 @@ class WienerPredictor():
             return self.wMinErrorBruteAlt(100)
 
         elif method == "superBruteAlt":
-            return self.wMinErrorBruteAlt(10000)
+            return self.wMinErrorBruteAlt(1000)
+
+        elif method == "heuristicAlt":
+            return self.wMinErrorAltHueristic()
 
         else:
             raise Exception()
@@ -73,7 +75,7 @@ class WienerPredictor():
     def wMinErrorBruteAlt(self, precision):
         t = self.time - self.steps
         alpha = [0] * self.steps
-        
+
         for i in range(self.steps):
 
             error = [0] * (precision + 1)
@@ -81,11 +83,53 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(self.steps):
-                    predict += (1.0 * j)/precision * (self.data[t+i-l][1] + self.noise[i-l])
+                    predict += (1.0 * j)/precision * (self.data[t+i-l] + self.noise[i-l])
 
-                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
+                error[j] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
 
             alpha[i] = ( 1.0 * min( enumerate(error), key=itemgetter(1))[0] ) / precision
+
+        return alpha
+
+    def wMinErrorAltHueristic(self):
+        t = self.time - self.steps
+        alpha = [0] * self.steps
+
+#        print 'time:  ' , self.time
+#        print 't:  ' , t
+#        print 'alpha:  ' , alpha
+#        print 'noise:  ' , self.noise
+        
+        for i in range(self.steps):
+
+            error = [0] * 11
+            for j in range(11):
+
+                predict = 0
+                for l in range(self.steps):
+                    predict += j/10.0 * (self.data[t] + self.noise[0])
+
+                error[j] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
+
+            min1 = min( enumerate(error), key=itemgetter(1))[0]
+#            print 'error:  ' , error
+
+            error2 = [0] * 21
+            for k in range(21):
+
+                predict = 0
+                for l in range(self.steps):
+                    predict += (min1/10.0 + (k - 11)/100.0) * (self.data[t] + self.noise[0])
+
+                error2[k] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
+
+#            print 'error2:  ' , error2
+            min2 = min( enumerate(error2), key=itemgetter(1))[0]
+
+            alpha[i] = min1/10.0 + (min2 - 11)/100.0
+#            print 'alpha:  ' , alpha[i]
+#            print alpha
+#            print '----------'
 
         return alpha
 
@@ -102,10 +146,10 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l])
+                    predict += alpha[l] * (self.data[t+i-l] + self.noise[i-l])
 
-                predict += (1.0 * j)/precision * (self.data[t][1] + self.noise[0])
-                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
+                predict += (1.0 * j)/precision * (self.data[t] + self.noise[0])
+                error[j] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
 
             alpha[i] = ( 1.0 * min( enumerate(error), key=itemgetter(1))[0] ) / precision
 
@@ -116,10 +160,10 @@ class WienerPredictor():
         t = self.time - self.steps
         alpha = [0] * self.steps
 
-        print 'time:  ' , self.time
-        print 't:  ' , t
-        print 'alpha:  ' , alpha
-        print 'noise:  ' , self.noise
+#        print 'time:  ' , self.time
+#        print 't:  ' , t
+#        print 'alpha:  ' , alpha
+#        print 'noise:  ' , self.noise
         
         for i in range(self.steps):
 
@@ -128,31 +172,31 @@ class WienerPredictor():
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l])
+                    predict += alpha[l] * (self.data[t+i-l] + self.noise[i-l])
 
-                predict += j/10.0 * (self.data[t][1] + self.noise[0])
-                error[j] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
+                predict += j/10.0 * (self.data[t] + self.noise[0])
+                error[j] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
 
             min1 = min( enumerate(error), key=itemgetter(1))[0]
-            print 'error:  ' , error
+#            print 'error:  ' , error
 
             error2 = [0] * 21
             for k in range(21):
 
                 predict = 0
                 for l in range(i):
-                    predict += alpha[l] * (self.data[t+i-l][1] + self.noise[i-l] )
+                    predict += alpha[l] * (self.data[t+i-l] + self.noise[i-l] )
 
-                predict += ( min1/10.0 + (k - 11)/100.0) * (self.data[t][1] + self.noise[0])
-                error2[k] = math.pow( ( ( self.data[t+i+1][1] ) - predict ) , 2)
+                predict += ( min1/10.0 + (k - 11)/100.0) * (self.data[t] + self.noise[0])
+                error2[k] = math.pow( ( ( self.data[t+i+1] ) - predict ) , 2)
 
-            print 'error2:  ' , error2
+#            print 'error2:  ' , error2
             min2 = min( enumerate(error2), key=itemgetter(1))[0]
 
             alpha[i] = min1/10.0 + (min2 - 11)/100.0
-            print 'alpha:  ' , alpha[i]
-            print alpha
-            print '----------'
+#            print 'alpha:  ' , alpha[i]
+#            print alpha
+#            print '----------'
 
         return alpha
 

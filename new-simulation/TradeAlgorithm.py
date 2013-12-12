@@ -3,6 +3,7 @@ from AlphaBetaGammaFilter import AlphaBetaGammaFilter
 import random
 import math
 from LinearFilter import LinearFilter
+from wienerFilter import WienerPredictor
 
 class Order():
     """ A datatype for an order object 
@@ -165,7 +166,9 @@ class TradingAlgorithm():
 
         # Wiener Filter
         elif self.algorithm == "Wiener":
-            pass
+            steps = 20
+            start = 4
+            wF = WienerPredictor(data)
 
         # Double Moving Average
         elif self.algorithm == "dma":
@@ -179,13 +182,22 @@ class TradingAlgorithm():
         currentPrice = 0
         projectedPrice = 0
         for t in range(start, len(data)-5):
+
+            if t % 1000 == 0:
+                print t
+
             currentPrice = data[t]
             actual.append(currentPrice)
 
             if self.algorithm == "abg":
                 projectedPrice = abgFilter.getProjectedValue(currentPrice)
+
             elif self.algorithm == "linearModel":
                 projectedPrice = lf.applyFilter(t, data)
+
+            elif self.algorithm == "Wiener":
+                projectedPrice = wF.filter(t, steps, "heuristicAlt")
+
             else:
                 return
 
@@ -303,7 +315,9 @@ class DoubleMovingAverage(TradingAlgorithm):
 
         # sell all assets
 
-        #self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+        # sell all assets
+        if len( self.portfolio.assets ) > 0:
+            self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
 
         totalReturn = (self.portfolio.availableCapital - self.capital)
         return totalReturn
