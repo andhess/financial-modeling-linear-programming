@@ -1,6 +1,7 @@
 import numpy as np
 from AlphaBetaGammaFilter import AlphaBetaGammaFilter
 import random
+import math
 from LinearFilter import LinearFilter
 
 class Order():
@@ -150,17 +151,29 @@ class TradingAlgorithm():
         if parameter == None:
             parameter = 0.25
 
+        # Kalman Filter / Alpha Beta Gamma Filter
         if self.algorithm == "abg":
             abgFilter = AlphaBetaGammaFilter(data[0],data[1],parameter)
             start = 0
+        
+        # Linear Model
         elif self.algorithm == "linearModel":
             filterLength = 2000
             stepLen = 1
             lf = LinearFilter(data[:len(data)/2],filterLength,stepLen)
             start = len(data)/2
+
+        # Wiener Filter
+        elif self.algorithm == "Wiener":
+            pass
+
+        # Double Moving Average
+        elif self.algorithm == "dma":
+            raise Exception("you need to use the DoubleMovingAverage Class for this algorithm!")
+
         else:
-            print "No algorithm selected - Program Ending"
-            return
+            raise Exception("No algorithm selected - Program Ending")
+
 
         # simulate over the range of the data
         currentPrice = 0
@@ -198,10 +211,11 @@ class TradingAlgorithm():
                 continue
 
         # sell all assets
-        self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+        if len( self.portfolio.assets ) > 0:
+            self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
 
         totalReturn = (self.portfolio.availableCapital - self.capital)
-        return (totalReturn, actual, predicted) 
+        return (totalReturn, actual, predicted)
 
 
     def printPortfolio(self, currentPrice):
@@ -225,7 +239,6 @@ class DoubleMovingAverage(TradingAlgorithm):
 
         # simulate over the range of the data
         currentPrice = 0
-        projectedPrice = 0
         self.addNoise = noise
         self.setNoise()
         self.longW = longW
@@ -233,14 +246,22 @@ class DoubleMovingAverage(TradingAlgorithm):
 
         prevDiff = 0
 
-        for t in range( len( self.data ) - 2 ):
+        for t in range( 6, len( self.data ) - 2 ):
 
             currentPrice = self.data[t]
-            shortAvg = self.calcAverage(t, "short")
-            longAvg = self.calcAverage(t, "long")
+
+            if t < self.longW:
+
+                shortAvg = self.calcAverage(t, "short", int( t / (self.longW / self.shortW) ) )
+                longAvg = self.calcAverage(t, "long", t)
+
+            else:
+                shortAvg = self.calcAverage(t, "short")
+                longAvg = self.calcAverage(t, "long")
+            
             currentDiff = longAvg - shortAvg
 
-            print "\nIteration t:  " , t
+            # print "\nIteration t:  " , t
 
             if t == 0:
                 continue
@@ -256,20 +277,22 @@ class DoubleMovingAverage(TradingAlgorithm):
             # sell!
             elif currentDiff > 0 and prevDiff <= 0:
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "SELL"):
-                    print "Selling at", currentPrice, " projecting", projectedPrice
+                    #print "Selling at", currentPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "SELL")
                     # self.printPortfolio()
                 else:
-                    print "order not valid. Tried selling at", currentPrice, " projecting", projectedPrice
+                    pass
+                    #print "order not valid. Tried selling at", currentPrice
 
             # buy!
             elif currentDiff <= 0 and prevDiff > 0:
                 if self.portfolio.validateOrder(ticker, 1, currentPrice, "BUY"):
-                    print "Buying at", currentPrice, " projecting", projectedPrice
+                    #print "Buying at", currentPrice
                     self.portfolio.placeOrder(ticker, 1, currentPrice, "BUY")
                     # self.printPortfolio()
                 else:
-                    print "order not valid. Tried buying at", currentPrice, " projecting", projectedPrice
+                    pass
+                    #print "order not valid. Tried buying at", currentPrice
 
             # shouldn't get here ever
             else:
@@ -278,20 +301,29 @@ class DoubleMovingAverage(TradingAlgorithm):
             # update the previous values for the next state
             prevDiff = currentDiff
 
-        self.printPortfolio()
+        # sell all assets
+
+        #self.portfolio.placeOrder(ticker, self.portfolio.assets[0].unitsOwned, currentPrice, "SELL")
+
+        totalReturn = (self.portfolio.availableCapital - self.capital)
+        return totalReturn
 
 
-    def calcAverage(self, time, window):
+    def calcAverage(self, time, windowType, windowLength=None):
 
-        if window == "long":
-            avg = np.array( self.data[time-self.longW:time+1] )
+        if windowType == "long":
+            window = self.longW if windowLength is None else windowLength
+            avg = np.array( self.data[time-window:time+1] )
+
         else:
-            avg = np.array( self.data[time-self.shortW:time+1] )
+            window = self.shortW if windowLength is None else windowLength
+            avg = np.array( self.data[time-window:time+1] )
+
         if self.addNoise:
-            if window == "long":
-                return np.average( avg + np.array( self.noise[time-self.longW:time+1] ) )
+            if windowType == "long":
+                return np.average( avg + np.array( self.noise[time-window:time+1] ) )
             else:
-                return np.average( avg + np.array( self.noise[time-self.shortW:time+1] ) )
+                return np.average( avg + np.array( self.noise[time-window:time+1] ) )
         else:
             return np.average( avg )
 

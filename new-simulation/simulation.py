@@ -53,18 +53,27 @@ for ticker in tickerList:
 
     # test alpha
     testParamReturns = []
-    params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
+#    params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
+#    for p in params:
+#        ta = TradingAlgorithm(data, ticker, "abg")
+#        totalReturn, actual, predicted = ta.run(p)
+#        testParamReturns.append(totalReturn)
+
+
+    # ---- For Testing the Double Moving Average ----
+    params = [ [100,200] ]
     for p in params:
-        ta = TradingAlgorithm(data, ticker, "abg")
-        totalReturn, actual, predicted = ta.run(p)
+        ta = DoubleMovingAverage( data, ticker, "dma")
+        totalReturn = ta.run(p[1],p[0])
         testParamReturns.append(totalReturn)
+        # print 'totalReturn:  ' , totalReturn
+
     print "\n" + ticker 
     printForExcel(testParamReturns)
 
 
+printForExcel(tickerList)
 
-# printForExcel(tickerList)
-# printForExcel(returns)
 
 
 
