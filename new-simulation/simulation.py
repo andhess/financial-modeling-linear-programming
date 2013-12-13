@@ -47,7 +47,7 @@ def getPercCorrectPredictions(actual, predicted):
     return count/length
 
 
-def ABGTestNetProfit(parameter):
+def TestNetProfit(parameter, algo):
     returns = []
     tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
     
@@ -57,14 +57,14 @@ def ABGTestNetProfit(parameter):
         description.readDataFromFile(dataPath, rawReadData)
         data = description.getOpenPriceHistory(rawReadData)
     
-        ta = TradingAlgorithm(data, ticker, "abg")
+        ta = TradingAlgorithm(data, ticker, algo)
         totalReturn, actual, predicted = ta.run( parameter )
         returns.append(totalReturn)
 
     printForExcel(tickerList)
     printForExcel(returns)
 
-def ABGTestPredVAct(parameter):
+def TestPredVAct(parameter, algo):
     returns = []
     ticker = "UPS"
     
@@ -74,7 +74,7 @@ def ABGTestPredVAct(parameter):
     data = description.getOpenPriceHistory(rawReadData)
     dataList.append(data)
 
-    ta = TradingAlgorithm(data, ticker, "abg")
+    ta = TradingAlgorithm(data, ticker, algo)
     totalReturn, actual, predicted = ta.run(parameter)
 
     # printForExcel([totalReturn])
@@ -100,7 +100,6 @@ def ABGTestAlpha():
         increment = 1.0/numParams
         params.append(i*increment)
 
-    # params = [.05,.10,.15,.20,.25,.30,.35,.40,.45,.50,.55,.60,.65,.70,.75,.80,.85,.90,.95]
     for p in params:
         ta = TradingAlgorithm(data, ticker, "abg")
         totalReturn, actual, predicted = ta.run(p)
@@ -114,7 +113,7 @@ def ABGTestAlpha():
     print "Realized net profit of", max(returns)
     print "Percentage Predictions Correct", maxPercentCorrect
 
-    # printForExcel(tickerList)
+    # printForExcel(params)
     # printForExcel(returns)
 
 
@@ -152,9 +151,10 @@ for ticker in tickerList:
 
 def main():
     # Alpha Beta Gamma Tests
-    # ABGTestNetProfit(0.8)
-    ABGTestPredVAct(0.2)
+    # TestNetProfit(2000, "linearModel")
+    TestPredVAct(2000, "linearModel")
     # ABGTestAlpha()
+
 
 
 if __name__ == "__main__":

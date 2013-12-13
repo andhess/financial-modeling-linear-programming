@@ -159,7 +159,7 @@ class TradingAlgorithm():
         
         # Linear Model
         elif self.algorithm == "linearModel":
-            filterLength = 2000
+            filterLength = parameter
             stepLen = 1
             lf = LinearFilter(data[:len(data)/2],filterLength,stepLen)
             start = len(data)/2
