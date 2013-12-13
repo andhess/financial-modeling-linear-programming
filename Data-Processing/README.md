@@ -1,1 +1,0 @@
-This directory will be for scripts dealing with converting raw asset data into information that is useable for the binomial modeling. A binomial model will be able to compile directly from an output of the data processing

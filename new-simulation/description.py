@@ -235,36 +235,3 @@ def showDualLineGraph(data1, data2):
 
     plt.show()
 
-# rawReadData = []
-# ticker = "PEP"
-# dataPath = "./../Historical-Datal/" + ticker + ".txt"
-# readDataFromFile(dataPath, rawReadData)
-# data = getOpenPriceHistory(rawReadData)
-
-# for e in data:
-#     print e
-
-# abg = AlphaBetaGammaFilter(data)
-# (actual, projected) = abg.getProjectedValue(.65)
-
-# for i in range(100):
-#     print str(actual[i]) + "\t" + str(projected[i])
-
-# correlationList = []
-
-# for i in range(10,100,10):
-#     alpha = float(i)/100.0
-
-#     filtr = AlphaBetaGammaFilter(data)
-#     actualValues, projectedValues = filtr.getProjectedValue(alpha)
-
-#     showDualLineGraph(actualValues[1000:1050], projectedValues[1000:1050])
-    # correlation = (alpha, scipy.stats.pearsonr(projectedValues, data))
-    # correlationList.append(correlation)
-
-
-# print correlationList
-
-
-
-
