@@ -142,7 +142,7 @@ class TradingAlgorithm():
         self.algorithm = algorithm
 
 
-    def run(self, parameter=None):
+    def run(self, parameter=None, method=None):
         actual = []
         predicted = []
 
@@ -166,7 +166,8 @@ class TradingAlgorithm():
 
         # Wiener Filter
         elif self.algorithm == "Wiener":
-            steps = 20
+            steps = parameter
+            format = method
             start = 4
             wF = WienerPredictor(data)
 
@@ -183,8 +184,8 @@ class TradingAlgorithm():
         projectedPrice = 0
         for t in range(start, len(data)-5):
 
-            # if t % 1000 == 0:
-            #     print t
+            #if t % 1000 == 0:
+            #    print t
 
             currentPrice = data[t]
             actual.append(currentPrice)
@@ -196,7 +197,7 @@ class TradingAlgorithm():
                 projectedPrice = lf.applyFilter(t, data)
 
             elif self.algorithm == "Wiener":
-                projectedPrice = wF.filter(t, steps, "heuristicAlt")
+                projectedPrice = wF.filter(t, steps, format)
 
             else:
                 return

@@ -2,6 +2,7 @@ import common
 import numpy as np
 import description
 from TradeAlgorithm import *
+import gc
 # import matplotlib.pyplot as plt
 
 
@@ -46,6 +47,68 @@ def getPercCorrectPredictions(actual, predicted):
             continue
     return count/length
 
+def DMATest():
+    returns = []
+    tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+    
+    for ticker in tickerList:
+        rawReadData = []
+        dataPath = "./../Historical-Datal/" + ticker + ".txt"
+        description.readDataFromFile(dataPath, rawReadData)
+        data = description.getOpenPriceHistory(rawReadData)
+
+
+        params = [ [25,50], [100,200] ]
+        for p in params:
+            ta = DoubleMovingAverage( data, ticker, "dma")
+            totalReturn = ta.run(p[1],p[0])
+            returns.append(totalReturn)
+
+    printForExcel(tickerList)
+    printForExcel(returns)
+
+def WienerNetProfit(stepSize, method):
+    returns = []
+    tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
+    #tickerList = ["CPB"]
+
+    for ticker in tickerList:
+        gc.collect()
+        rawReadData = []
+        dataPath = "./../Historical-Datal/" + ticker + ".txt"
+        description.readDataFromFile(dataPath, rawReadData)
+        data = description.getOpenPriceHistory(rawReadData)
+    
+        ta = TradingAlgorithm(data, ticker, "Wiener")
+        totalReturn, actual, predicted = ta.run(stepSize, method)
+        returns.append(totalReturn)
+
+    printForExcel(tickerList)
+    printForExcel(returns)
+
+def WeinerPredVAct(parameter, method):
+    returns = []
+    ticker = "UPS"
+    
+    rawReadData = []
+    dataPath = "./../Historical-Datal/" + ticker + ".txt"
+    description.readDataFromFile(dataPath, rawReadData)
+    data = description.getOpenPriceHistory(rawReadData)
+
+    ta = TradingAlgorithm(data, ticker, "Wiener")
+    totalReturn, actual, predicted = ta.run(parameter, method)
+
+    # printForExcel([totalReturn])
+    # print ticker
+    printForExcel(actual)
+    print "XXXXXXXXXXXX"
+    print "XXXXXXXXXXXX"
+    printForExcel(predicted)
+    print "ZZZZZZ"
+    print totalReturn
+    # print getPercCorrectPredictions(actual, predicted)
+
+
 
 def TestNetProfit(parameter, algo):
     returns = []
@@ -72,7 +135,6 @@ def TestPredVAct(parameter, algo):
     dataPath = "./../Historical-Datal/" + ticker + ".txt"
     description.readDataFromFile(dataPath, rawReadData)
     data = description.getOpenPriceHistory(rawReadData)
-    dataList.append(data)
 
     ta = TradingAlgorithm(data, ticker, algo)
     totalReturn, actual, predicted = ta.run(parameter)
@@ -117,43 +179,19 @@ def ABGTestAlpha():
     # printForExcel(returns)
 
 
-dataList = []
-tickerList = ["F", "aapl", "ACN", "CAT", "M", "UPS", "PCLN", "CPB"]
-# tickerList = ["F"]
-
-returns = []
-
-for ticker in tickerList:
-    rawReadData = []
-    dataPath = "./../Historical-Datal/" + ticker + ".txt"
-    description.readDataFromFile(dataPath, rawReadData)
-    data = description.getOpenPriceHistory(rawReadData)
-    dataList.append(data)
-
-    # ---- Testing for Wiener Filter
-    # ta = TradingAlgorithm(data, ticker, "Wiener")
-    # totalReturn, actual, predicted = ta.run()
-    # testParamReturns.append(totalReturn)
-
-    # ---- For Testing the Double Moving Average ----
-#    params = [ [25,50], [100,200] ]
-#    for p in params:
-#        ta = DoubleMovingAverage( data, ticker, "dma")
-#        totalReturn = ta.run(p[1],p[0])
-#        testParamReturns.append(totalReturn)
-#        # print 'totalReturn:  ' , totalReturn
-
-    # print "\n" + ticker 
-    # printForExcel(testParamReturns)
-
-
-
-
 def main():
     # Alpha Beta Gamma Tests
     # TestNetProfit(2000, "linearModel")
-    TestPredVAct(2000, "linearModel")
+    # TestPredVAct(2000, "linearModel")
+    # ABGTestNetProfit(0.8)
+    # ABGTestPredVAct(0.2)
+
     # ABGTestAlpha()
+    # DMATest()
+    #WienerNetProfit(10, "heuristicAlt")
+    # WeinerPredVAct(40, "heuristicAlt")
+    # WienerTest(50)
+
 
 
 
